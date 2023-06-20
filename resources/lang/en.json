@@ -1,0 +1,55 @@
+{
+    "api": {
+        "welcome": "Welcome! You got into the minecraft API of the project MINE-PLAY.RU",
+        "users": {
+            "notfound": "User not found!"
+        },
+        "wallet": {
+            "notfound": "Wallet with current WID not found!"
+        },
+        "news": {
+            "notfound": "News not found!"
+        },
+        "servers": {
+            "notfound": "Servers not found!"
+        }
+    },
+    "permissions": {
+        "auth": "Log in to continue"
+    },
+    "register": {
+        "messages": {
+            "successful": "You have successfully registered!"
+        },
+        "errors": {
+            "name": {
+                "unique": "This nickname is already taken!",
+                "min": "Min length of the nickname is 4 characters!",
+                "max": "Max length of the nickname is 18 characters!",
+                "regexp": "The nickname contains invalid characters!"
+            },
+            "email": {
+                "unique": "This email is already taken!",
+                "max": "The max length of the email is 50 characters!"
+            },
+            "password": {
+                "min": "Min length of the password is 8 characters!",
+                "max": "Max length of the password is 40 characters!",
+                "regexp": "The password can contain only Latin letters and symbols!"
+            },
+            "required": "All fields are required!"
+        }
+    },
+    "login": {
+        "messages": {
+            "successful": "You have successfully logged in to your account!"
+        },
+        "errors": {
+            "credentials": "Invalid nickname or password!",
+            "already": "You are already logged in!"
+        }
+    },
+    "logout": {
+        "message": "You have successfully logged out of your account!"
+    }
+}
