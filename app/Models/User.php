@@ -69,5 +69,5 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public static function getByID($id){
         return User::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'level', 'role', 'status')->first();
     }
-    protected $table = 'users';
+    protected $table = 'Users';
 }

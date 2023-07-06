@@ -49,6 +49,7 @@ Route::middleware('api')->group(function () {
     });
     Route::prefix('servers')->group(function () {
         Route::get('/', 'ServersController@getAll');
+        Route::get('/status', 'ServersController@getGlobalOnline');
         Route::get('/slug/{slug}', 'ServersController@getBySlug');
         Route::get('/id/{id}', 'ServersController@getByID')->whereUuid('id');
     });

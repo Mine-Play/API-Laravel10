@@ -10,7 +10,7 @@ class Role extends Model
     use HasUuids;
     
     public $timestamps = false;
-    protected $table = 'roles';
+    protected $table = 'Roles';
     protected $connection = 'Global';
 
     protected $fillable = [

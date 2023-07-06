@@ -11,7 +11,7 @@ class Wallet extends Model
     use HasUuids;
     
     public $timestamps = false;
-    protected $table = 'wallets';
+    protected $table = 'Wallets';
     protected $connection = 'Global';
 
     protected $attributes = [

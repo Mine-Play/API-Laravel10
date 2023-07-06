@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Slider extends Model
 {
     use Notifiable, HasUuids;
-    protected $table = 'sliders';
+    protected $table = 'Sliders';
     protected $connection = 'Site';
     /**
      * The attributes that are mass assignable.

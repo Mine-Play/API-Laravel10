@@ -12,7 +12,7 @@ class Server extends Model
 {
     use Notifiable, HasUuids;
     //use HasUuids;
-    protected $table = 'servers';
+    protected $table = 'Servers';
     protected $connection = 'Global';
     /**
      * The attributes that are mass assignable.
@@ -36,13 +36,25 @@ class Server extends Model
         'address'
     ];
     public static function getAll(){
-        $servers = Server::select('id', 'uuid', 'name', 'slug', 'params', 'address')->get();
+        $servers = Server::select('id', 'name', 'slug', 'params', 'address')->get();
          for($i=0;$i<count($servers);$i++){
             $ping = Server::pingException($servers[$i]->makeVisible('address')->address);
             $servers[$i]->makeHidden('address');
             $servers[$i]->query = $ping;
          }
          return $servers;
+    }
+    public static function getGlobalOnline() {
+        $servers = Server::select('address')->get();
+        $online = 0;
+        $max = 0;
+        for($i=0;$i<count($servers);$i++){
+            $ping = Server::pingException($servers[$i]->makeVisible('address')->address);
+            $servers[$i]->makeHidden('address');
+            $online += $ping["online"];
+            $max += $ping["max"];
+         }
+         return ["online" => $online, "max" => $max];
     }
     public static function getByID($id){
         return Server::select('id', 'name', 'slug', 'params')->where('id', $id)->first();
@@ -52,7 +64,7 @@ class Server extends Model
     }
     public static function pingException($address): array{
         $addr = explode(':', $address);
-        $addr[1] = isset($addr[1]) ?? '25565'; 
+        $addr[1] = isset($addr[1]) ? '25565' : $addr[1]; 
         try {
             $resolver = new MinecraftQueryResolver(  $addr[0], $addr[1] );
             $result = $resolver->getResult();

@@ -31,6 +31,9 @@ class ServersController extends Controller
         }
         return response()->json(['response' => 200, 'data' => Server::getBySlug($slug), 'time' => date('H:i', time()) ]);
     }
+    public function getGlobalOnline(){
+        return response()->json(['response' => 200, 'data' => Server::getGlobalOnline(), 'time' => date('H:i', time()) ]);
+    }
     public function getByName($name){
         if(Server::getByName($name) == NULL){
             return response()->json(["response" => 404, "error" => Lang::get('api.servers.notfound')], 404);

@@ -10,7 +10,7 @@ class News extends Model
     use HasUuids;
     
     public $timestamps = false;
-    protected $table = 'news';
+    protected $table = 'News';
     protected $connection = 'Site';
 
     protected $fillable = [
