@@ -14,13 +14,25 @@ use App\Controller;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+//Protected Routes
+
+// Route::group(["middleware" => ["auth:sanctum"]], function () {
+
+// });
+
+
+
+
+
 Route::get('/', 'HomeController');
 Route::middleware('api')->prefix('auth')->group(function () {
     Route::post('login', 'Auth\LoginController@login');
     /**
      * Authenticated
      */
-    Route::middleware('jwt.auth')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', 'Auth\LogoutController@logout');
         Route::post('refresh', 'AuthController@refresh');
     });
@@ -28,8 +40,8 @@ Route::middleware('api')->prefix('auth')->group(function () {
 });
 Route::middleware('api')->group(function () {
     Route::prefix('users')->group(function () {
-        Route::middleware('jwt.auth')->post('/me', 'UserController@me');
-        Route::middleware('jwt.auth')->post('/', 'UserController@me');
+        Route::middleware('auth:sanctum')->post('/me', 'UserController@me');
+        Route::middleware('auth:sanctum')->post('/', 'UserController@me');
         Route::get('/id/{id}', 'UserController@getByID')->whereUuid('id');
         Route::get('/login/{login}', 'UserController@getByLogin');
     });
@@ -39,8 +51,8 @@ Route::middleware('api')->group(function () {
     });
     Route::get('/sliders/{type}', 'SlidersController@getAll');
     Route::prefix('wallets')->group(function () {
-        Route::post('/', 'WalletsController@me')->middleware('jwt.auth');
-        Route::post('/me', 'WalletsController@me')->middleware('jwt.auth');
+        Route::post('/', 'WalletsController@me')->middleware('auth:sanctum');
+        Route::post('/me', 'WalletsController@me')->middleware('auth:sanctum');
         Route::get('/wid/{wid}', 'WalletsController@getByWID')->whereUuid('id');
     });
     Route::prefix('roles')->group(function () {

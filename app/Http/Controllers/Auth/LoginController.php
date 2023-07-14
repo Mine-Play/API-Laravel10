@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Lang;
 
@@ -23,23 +24,21 @@ class LoginController extends Controller
     */
     public function login()
     {
-        if (Auth::check()) {
-            return response()->json([
-                'response' => 403,
-                'error' => Lang::get('login.errors.already'),
-                'time' => date('H:i', time()) 
-            ]);
-        }
         $credentials = request(['name', 'password']);
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json([
-                'response' => 401,
-                'error' => Lang::get('login.errors.credentials'),
-                'time' => date('H:i', time()) 
-            ]);
+        $user = User::where('name', $credentials["name"])->first();
+        return var_dump($user->tokens()->get()->pluck('token'));
+        if (!$user) {
+            $user = User::where('email', $credentials["name"])->first();
+            if(!$user || !Hash::check($credentials["password"], $user->password)){
+                return response()->json([
+                    'response' => 401,
+                    'error' => Lang::get('login.errors.credentials'),
+                    'time' => date('H:i', time()) 
+                ]);
+            }
         }
 
-        return $this->respondWithToken($token, $credentials["name"]);
+        return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $credentials["name"]);
     }
 
     public function refresh()
@@ -53,7 +52,6 @@ class LoginController extends Controller
             'message' => Lang::get('login.messages.successful', ["nickname" => $login]),
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60,
                 'time' => date('H:i', time()) 
         ]);
     }

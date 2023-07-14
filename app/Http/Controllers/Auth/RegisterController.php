@@ -84,16 +84,16 @@ class RegisterController extends Controller
           */
         $user = $this->create($request);
          /**
-          * Authorize it
+          * Generate token
           */
-        $token = auth()->login($user);
+        $token = $user->createToken('access_token')->plainTextToken;
         return $this->respondWithToken($token, $request->all()["name"]);
     }
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', "min:3", 'max:18', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'],
-            'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
+            'name' => ['required', 'string', "min:3", 'max:18', 'unique:Users', 'regex:/^[a-zA-Z0-9_]+$/'],
+            'email' => ['required', 'string', 'email', 'max:50', 'unique:Users'],
             'password' => ['required', 'string', 'min:8', 'max:40'],
         ], [
             /**
@@ -137,7 +137,7 @@ class RegisterController extends Controller
             'ip' => $request->ip(),
             'wid' => $wallet->id
         ]);
-        event(new Registered($user));
+        //event(new Registered($user));
         return $user;
     }
     protected function respondWithToken($token, $login)
@@ -146,8 +146,6 @@ class RegisterController extends Controller
             'response' => 200,
             'message' => Lang::get("register.messages.successful", ["nickname" => $login]),
                 'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60,
                 'time' => date('H:i', time()) 
         ]);
     }

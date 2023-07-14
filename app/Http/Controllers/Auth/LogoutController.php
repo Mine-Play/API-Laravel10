@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Lang;
 
@@ -17,10 +17,10 @@ class LogoutController extends Controller
     * User actions
     * Login, Logout, Register, RestorePass
     */
-    public function logout()
+    public function logout(Request $request)
     {
         
-        auth()->logout();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'respone' => 200,
