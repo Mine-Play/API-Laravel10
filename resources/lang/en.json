@@ -10,8 +10,18 @@
         "news": {
             "notfound": "News not found!"
         },
+        "roles": {
+            "notfound": "Roles not found!",
+            "notfoundone": "Role not found!"
+        },
         "servers": {
             "notfound": "Servers not found!"
+        },
+        "email": {
+            "verify": {
+                "already": "Your E-mail already confirmed!",
+                "success": "You're successfully confirmed E-mail"
+            }
         }
     },
     "permissions": {

@@ -26,7 +26,7 @@ class LoginController extends Controller
     {
         $credentials = request(['name', 'password']);
         $user = User::where('name', $credentials["name"])->first();
-        return var_dump($user->tokens()->get()->pluck('token'));
+        //return var_dump($user->tokens()->get()->pluck('token'));
         if (!$user) {
             $user = User::where('email', $credentials["name"])->first();
             if(!$user || !Hash::check($credentials["password"], $user->password)){

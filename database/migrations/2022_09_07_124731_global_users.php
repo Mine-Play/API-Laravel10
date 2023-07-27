@@ -24,14 +24,12 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_login')->nullable();
-            $table->integer('level')->default(1);
             $table->integer('role')->default(1);
-            $table->ipAddress('ip');
             $table->string('status')->default("online");
         });
     }
     public function down()
     {
-       //Schema::dropIfExists('users');
+       Schema::dropIfExists('users');
     }
 };

@@ -38,6 +38,13 @@ Route::middleware('api')->prefix('auth')->group(function () {
     });
     Route::post('register', 'Auth\RegisterController@register');
 });
+
+Route::middleware('api')->prefix('email')->group(function () {
+    Route::get('/email/verify/{id}/{hash}', 'EmailController@Verify')->middleware(['signed', 'auth:sanctum', 'throttle:6,1'])->name('verification.verify');
+
+    Route::post('/email/verify/resend', 'EmailController@VerifyResend')->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])->name('verification.send');
+});
+
 Route::middleware('api')->group(function () {
     Route::prefix('users')->group(function () {
         Route::middleware('auth:sanctum')->post('/me', 'UserController@me');

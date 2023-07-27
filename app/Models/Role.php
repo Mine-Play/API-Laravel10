@@ -22,4 +22,7 @@ class Role extends Model
     public static function getByID($id){
         return Role::where('id', $id)->select('title', 'color', 'index')->first();
     }
+    public static function permissions(){
+        
+    }
 }

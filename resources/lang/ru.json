@@ -17,6 +17,12 @@
         "servers": {
             "notfound": "Сервера не найдены!",
             "notfoundone": "Сервер не найден!"
+        },
+        "email": {
+            "verify": {
+                "already": "Ваш E-mail уже подтвержен!",
+                "success": "Вы успешно подтвердили свой E-mail!"
+            }
         }
     },
     "permissions": {
