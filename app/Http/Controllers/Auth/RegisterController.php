@@ -16,9 +16,6 @@ use Illuminate\Http\Request;
 use App\Helpers\Lang;
 
 use App\Models\User;
-use App\Models\Wallet;
-
-use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -131,15 +128,13 @@ class RegisterController extends Controller
     protected function create(Request $request)
     {
         $data = $request->all();
-        $wallet = Wallet::create();
+        //$wallet = Wallet::create();
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'ip' => $request->ip(),
-            'wid' => $wallet->id
+            'ip' => $request->ip()
         ]);
-        event(new Registered($user));
         return $user;
     }
     protected function respondWithToken($token, $login)

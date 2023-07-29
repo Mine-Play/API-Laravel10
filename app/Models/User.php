@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 
+use App\Events\Users\UserRegistered;
+
 class User extends Authenticatable implements MustVerifyEmail
 
 {
@@ -20,16 +22,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $attributes = [
         'last_login' => null,
-        'level' => 1,
+        // 'level' => 1,
         'role' => 1,
         'status' => 'online'
     ];
     protected $fillable = [
         'name',
         'email',
-        'ip',
-        'password',
-        'wid'
+        // 'ip',
+        'password'
     ];
     protected $hidden = [
         'password', 'remember_token'
@@ -44,10 +45,15 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     public $timestamps = false;
+
+    protected $dispatchesEvents = [
+        'created' => UserRegistered::class,
+        // 'deleted' => UserDeleted::class,
+    ];
+
+    
     /**
-     * The attributes that shoнuld be cast.
-     *
-     * @var array<string, string>
+     * User model methods
      */
     public static function getByLogin($login){
         return User::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'level', 'role', 'status')->first();

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\Auth;
+
 class Role extends Model
 {
     use HasUuids;
@@ -22,7 +24,8 @@ class Role extends Model
     public static function getByID($id){
         return Role::where('id', $id)->select('title', 'color', 'index')->first();
     }
-    public static function permissions(){
-        
+    public static function me(){
+        $user = Auth::user();
+        return Role::where('id', $user->role)->select('title', 'color', 'index')->first();
     }
 }

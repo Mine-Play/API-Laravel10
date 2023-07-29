@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\New;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class News extends Model
+class Item extends Model
 {
     use HasUuids;
     
@@ -31,9 +31,9 @@ class News extends Model
         'date'  => 'datetime:Y-m-d H:00'
     ];
     public static function getAll(){
-        return News::all();
+        return Item::all();
     }
     public static function getByID($id){
-        return News::where('id', $id)->first();
+        return Item::where('id', $id)->first();
     }
 }

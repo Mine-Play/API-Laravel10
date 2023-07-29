@@ -4,15 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
+use Illuminate\Support\Facades\Auth;
 
 class Wallet extends Model
 {
-    use HasUuids;
     
     public $timestamps = false;
     protected $table = 'Wallets';
     protected $connection = 'Global';
+
+    protected $fillable = [
+        'id'
+    ];
 
     protected $attributes = [
         'money' => 0,
@@ -20,10 +24,8 @@ class Wallet extends Model
         'keys' => 0,
         'history' => NULL
     ];
-    public static function getMy($wid){
-        return Wallet::where('id', $wid)->select('id', 'money', 'coins', 'keys', 'history')->first();
-    }
-    public static function wid($wid){
-        return Wallet::where('id', $wid)->select('id', 'money', 'coins', 'keys')->first();
+    public static function me(){
+        $user = Auth::user();
+        return Wallet::where('id', $user->id)->select('id', 'money', 'coins', 'keys', 'history')->first();
     }
 }

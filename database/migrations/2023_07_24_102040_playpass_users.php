@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::create('PlayPass_users', function (Blueprint $table) {
             $table->uuid('id')->nullable()->unique();
-            $table->uuid('user')->unique();
             $table->integer('level')->default(1);
             $table->integer('tokens')->default(0);
             $table->string('type')->default('standart');

@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use App\Helpers\Lang;
 
 use App\Http\Controllers\Controller;
+
+use App\Events\Users\UserRegistered;
+use App\Events\Users\UserDeleted;
+
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+
+
 use App\Models\Wallet;
 use App\Models\Role;
  
@@ -17,22 +22,22 @@ class UserController extends Controller
      */
     public function me()
     {
-         $info = Auth::user();
-         $wid = Wallet::wid($info->wid);
-         $role = Role::getByID($info->role);
-         $info->wallet = [
-            "id" => $info->wid,
-            "money" => $wid->money,
-            "keys" => $wid->keys,
-            "coins" => $wid->coins,
+        $user = Auth::user();
+         $wallet = Wallet::me();
+         $role = Role::me();
+         $user->wallet = [
+            "money" => $wallet->money,
+            "keys" => $wallet->keys,
+            "coins" => $wallet->coins,
          ];
-         $info->role = [
-            "id" => $info->role,
+         $user->role = [
+            "id" => $user->role,
             "title" => $role->title,
             "color" => $role->color
          ];
-        return response()->json(['response' => 200, 'data' => $info, 'time' => date('H:i', time()) ]);
+        return response()->json(['response' => 200, 'data' => $user, 'time' => date('H:i', time()) ]);
     }
+
     public function getByUUID($uuid){
         if(User::getByUUID($uuid) == NULL){
             return response()->json(["response" => 404, "error" => Lang::get('api.users.notfound')], 404);
