@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('money')->default(0);
             $table->integer('coins')->default(0);
             $table->integer('keys')->default(0);
-            $table->json('history')->nullable();
         });
     }
 

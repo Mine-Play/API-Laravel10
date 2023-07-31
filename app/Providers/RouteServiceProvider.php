@@ -32,9 +32,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::namespace($this->public_namespace)->group(base_path('routes/api/public.php'));
+            Route::namespace($this->admin_namespace)->prefix("admin")->group(base_path('routes/api/admin.php'));
+            Route::namespace($this->admin_namespace)->prefix("plugins")->group(base_path('routes/plugins.php'));
         });
-        // $this->routes(function () {
-        //     Route::namespace($this->admin_namespace)->group(base_path('routes/api/admin.php'));
-        // });
     }
 }

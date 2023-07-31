@@ -17,13 +17,8 @@ class Item extends Model
         'things_standart',
         'things_gold'
     ];
-    protected $attributes = [
-        'attrs' => null,
-        'likes' => 0,
-        'comments' => 0
-    ];
     protected $casts = [
-        'beginning_at'  => 'datetime:Y-m-d H:00',
-        'ending_at'  => 'datetime:Y-m-d H:00'
+        'beginning_at'  => 'datetime:Y-m-d H:m:s',
+        'ending_at'  => 'datetime:Y-m-d H:m:s'
     ];
 }

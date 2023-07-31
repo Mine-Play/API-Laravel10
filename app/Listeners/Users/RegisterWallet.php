@@ -23,6 +23,6 @@ class RegisterWallet
      */
     public function handle(UserRegistered $event): void
     {
-        Wallet::create(["id" => $event->user_id]);
+        Wallet\Instance::create(["id" => $event->user_id]);
     }
 }

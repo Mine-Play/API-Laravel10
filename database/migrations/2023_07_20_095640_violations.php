@@ -12,15 +12,15 @@ return new class extends Migration
     protected $connection = 'Global';
     public function up(): void
     {
-        Schema::create('violations', function (Blueprint $table) {
+        Schema::create('Violations', function (Blueprint $table) {
             $table->uuid('id')->nullable()->unique();
-            $table->uuid('user')->unique();
+            $table->uuid('user');
             $table->string('type');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('ending_at');
-            $table->uuid('moderator');
-            $table->json('rules');
-            $table->string('message')->default(null);
+            $table->string('moderator')->nullable();
+            $table->string('rules');
+            $table->string('message')->nullable();
         });
     }
 

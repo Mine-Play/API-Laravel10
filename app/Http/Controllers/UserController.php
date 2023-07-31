@@ -23,7 +23,7 @@ class UserController extends Controller
     public function me()
     {
         $user = Auth::user();
-         $wallet = Wallet::me();
+         $wallet = Wallet\Instance::me();
          $role = Role::me();
          $user->wallet = [
             "money" => $wallet->money,

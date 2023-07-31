@@ -56,8 +56,16 @@ Route::middleware('api')->group(function () {
         Route::get('/', 'NewsController@getAll');
         Route::get('/id/{id}', 'NewsController@getByID')->whereUuid('id');
     });
+    Route::prefix('changelogs')->group(function () {
+        Route::get('/', 'ChangeLogs\ItemsController@getAll');
+        Route::get('/id/{id}', 'NewsController@getByID')->whereUuid('id');
+    });
     Route::get('/sliders/{type}', 'SlidersController@getAll');
     Route::prefix('wallets')->group(function () {
+        Route::prefix("add")->middleware('auth:sanctum')->group(function() {
+            Route::post('/', 'WalletsController@addMe');
+            Route::post('/player/{id}', 'WalletsController@addAnother')->whereUuid('id');
+        });
         Route::post('/', 'WalletsController@me')->middleware('auth:sanctum');
         Route::post('/me', 'WalletsController@me')->middleware('auth:sanctum');
         Route::get('/wid/{wid}', 'WalletsController@getByWID')->whereUuid('id');
@@ -71,6 +79,10 @@ Route::middleware('api')->group(function () {
         Route::get('/status', 'ServersController@getGlobalOnline');
         Route::get('/slug/{slug}', 'ServersController@getBySlug');
         Route::get('/id/{id}', 'ServersController@getByID')->whereUuid('id');
+    });
+    Route::prefix('violations')->group(function () {
+        Route::get('/', 'ViolationsController@me')->middleware('auth:sanctum');
+        //Route::get('/id/{id}', 'NewsController@getByID')->whereUuid('id');
     });
 });
 Auth::routes(['verify' => true]);

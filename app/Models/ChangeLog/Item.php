@@ -5,6 +5,8 @@ namespace App\Models\ChangeLog;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
+//use App\Models\ChangeLog\Comment;
+
 class Item extends Model
 {
     use HasUuids;
@@ -15,6 +17,7 @@ class Item extends Model
         'title',
         'author',
         'content',
+        'description',
         'comment'
     ];
     protected $attributes = [
@@ -25,4 +28,13 @@ class Item extends Model
     protected $casts = [
         'created_at'  => 'datetime:Y-m-d H:00'
     ];
+    public $timestamps = false;
+    public function comments()
+    {
+        return $this->hasMany(ChangeLog\Comment::class, 'changelog_id');
+    }
+
+    // protected $dispatchesEvents = [
+    //     'created' => ChangeLogCreated::class
+    // ];
 }

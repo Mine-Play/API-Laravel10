@@ -15,10 +15,12 @@ return new class extends Migration
         Schema::create('Personalize_items', function (Blueprint $table) {
             $table->uuid('id')->nullable();
             $table->uuid('category');
-            $table->uuid('position');
+            $table->string('position');
             $table->string('name');
-            $table->string('rare');
+            $table->uuid('rare');
             $table->text('description');
+            $table->integer('cost_money');
+            $table->integer('cost_coins')->nullable();
         });
     }
 

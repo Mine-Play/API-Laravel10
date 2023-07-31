@@ -9,9 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    protected $connection = 'Minigames';
     public function up(): void
     {
-        //
+        Schema::create('Personalize_cats', function (Blueprint $table) {
+            $table->uuid('id')->nullable();
+            $table->string('title');
+            $table->text('description');
+        });
     }
 
     /**

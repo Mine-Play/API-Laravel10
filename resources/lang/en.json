@@ -5,7 +5,10 @@
             "notfound": "User not found!"
         },
         "wallet": {
-            "notfound": "Wallet with current WID not found!"
+            "notfound": "Wallet with current WID not found!",
+            "minsum": "The minimum amount of replenishment of the wallet is 1 money",
+            "successadd": "You have successfully replenished your wallet with :amount money",
+            "usernotfound": "User with id :id not found!"
         },
         "news": {
             "notfound": "News not found!"

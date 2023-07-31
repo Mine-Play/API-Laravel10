@@ -10,6 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 use App\Events\Users\UserRegistered;
 
+use App\Models\Violation;
+
 class User extends Authenticatable implements MustVerifyEmail
 
 {
@@ -45,12 +47,50 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     public $timestamps = false;
+    public function ban($moderator, $ending_at, $rules, $message = null){
+        $violation = Violation::create([
+            "user" => $this->id,
+            "type" => "ban",
+            "ending_at" => $ending_at,
+            "moderator" => $moderator,
+            "rules" => $rules,
+            "message" => $message
+        ]);
+        return $violation->id;
+    }
 
+    public function addMoney($val, $dark = false, $history = true) {
+        $this->Wallet->add("money", $val, $history);
+    }
+    public function addKeys($val, $history = true) {
+        $this->Wallet->add("key", $val, $history);
+    }
+    public function addCoins($val, $history = true) {
+        $this->Wallet->add("coin", $val, $history);
+    }
+
+    public function excahngeKeys($val) {
+        $this->Wallet->exchange("keys", $val);
+    }
+    public function excahngeCoins($val) {
+        $this->Wallet->exchange("coins", $val);
+    }
+    public function unban($moderator, $reason) {
+        $this->Violations->where("type", "ban")->first()->delete();
+    }
     protected $dispatchesEvents = [
-        'created' => UserRegistered::class,
-        // 'deleted' => UserDeleted::class,
+        'created' => UserRegistered::class
     ];
 
+    public function Violations()
+    {
+        return $this->hasMany(Violation::class, 'user');
+    }
+
+    public function Wallet()
+    {
+        return $this->hasOne(Wallet\Instance::class, 'id', 'id');
+    }
     
     /**
      * User model methods

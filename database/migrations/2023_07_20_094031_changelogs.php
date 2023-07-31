@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->timestamp('created_at')->useCurrent();
             $table->uuid('author');
+            $table->text('description');
             $table->text('content');
             $table->string('comment');
             $table->json('attrs')->nullable();

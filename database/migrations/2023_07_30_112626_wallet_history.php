@@ -11,15 +11,14 @@ return new class extends Migration
      */
     protected $connection = 'Site';
     public function up(): void
-    {
-        Schema::create('ChangeLogs_Comments', function (Blueprint $table) {
+    {  
+        Schema::create('Wallet_history', function (Blueprint $table) {
             $table->uuid('id')->nullable()->unique();
-            $table->uuid('changelog_id')->nullable();
+            $table->uuid('wid')->nullable();
+            $table->timestamp('date')->useCurrent();
             $table->string('title');
-            $table->timestamp('created_at')->useCurrent();
-            $table->uuid('author');
-            $table->text('content');
-            $table->integer('likes')->default(0);
+            $table->integer('amount');
+            $table->uuid('category')->nullable();
         });
     }
 
