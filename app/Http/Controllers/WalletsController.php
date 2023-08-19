@@ -42,8 +42,13 @@ class WalletsController extends Controller
         }
         $amount = $request->all()["amount"];
         $user = Auth::user();
-        $user->addMoney($amount);
-        return response()->json(['response' => 200, 'message' => Lang::get('api.wallet.successadd', ["amount" => $amount]), 'data' => ["balance" => $user->Wallet->money], 'time' => date('H:i', time()) ]);
+        $id = $user->addMoney($amount);
+        return response()->json(['response' => 200, 'message' => Lang::get('api.wallet.successadd', ["amount" => $amount]), 'data' => ["balance" => $user->Wallet->money, "transaction_id" => $id], 'time' => date('H:i', time()) ]);
+    }
+    public function history(){
+        // $user = Auth::user();
+        $history = Auth::user()->Wallet->History;
+        return response()->json(['response' => 200, 'data' => $history, 'time' => date('H:i', time()) ]);
     }
     public function addPlayer(Request $request) {
         $data = $request->all();

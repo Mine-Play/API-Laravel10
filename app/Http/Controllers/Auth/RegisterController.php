@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
@@ -135,6 +136,7 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'ip' => $request->ip()
         ]);
+        event(new Registered($user));
         return $user;
     }
     protected function respondWithToken($token, $login)

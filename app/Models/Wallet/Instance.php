@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\User;
+
 class Instance extends Model
 {
     
@@ -41,9 +43,21 @@ class Instance extends Model
                  break;
         }
         $this->save();
+        if($history){
+            $hist = History::create([
+                "wid" => $this->User->id,
+                "type" => "add",
+                "bill" => $wallet,
+                "amount" => $val
+            ]);
+            return $hist->id;
+        }
     }
     public function User()
     {
         return $this->belongsTo(User::class, 'id', 'id');
+    }
+    public function History() {
+        return $this->hasMany(History::class, 'wid', 'id');
     }
 }

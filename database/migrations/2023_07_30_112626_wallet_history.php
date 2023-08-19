@@ -16,8 +16,10 @@ return new class extends Migration
             $table->uuid('id')->nullable()->unique();
             $table->uuid('wid')->nullable();
             $table->timestamp('date')->useCurrent();
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->integer('amount');
+            $table->string('bill');
+            $table->string('type');
             $table->uuid('category')->nullable();
         });
     }

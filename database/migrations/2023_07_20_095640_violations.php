@@ -17,13 +17,13 @@ return new class extends Migration
             $table->uuid('user');
             $table->string('type');
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('ending_at');
+            $table->timestamp('ending_at')->nullable();
             $table->string('moderator')->nullable();
             $table->string('rules');
             $table->string('message')->nullable();
         });
     }
-
+ 
     /**
      * Reverse the migrations.
      */
@@ -31,4 +31,5 @@ return new class extends Migration
     {
         //
     }
-};
+    };
+    

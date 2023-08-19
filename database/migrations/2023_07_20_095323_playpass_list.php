@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('season')->unique();
             $table->timestamp('beginning_at')->useCurrent();
-            $table->timestamp('ending_at');
+            $table->timestamp('ending_at')->nullable();
             $table->json('things_standart');
             $table->json('things_gold');
         });

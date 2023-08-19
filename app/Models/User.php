@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
+
 
 use App\Events\Users\UserRegistered;
 
@@ -38,7 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password', 'remember_token'
     ];
     protected $casts = [
-        'created_at'  => 'datetime:Y-m-d H:00',
+        'created_at'  => 'datetime:Y-m-d H:m:s',
         'email_verified_at' => 'datetime'
     ];
     /**
@@ -59,14 +61,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $violation->id;
     }
 
+    public function changePassword($newpass){
+        $this->password = Hash::make($newpass);
+        $this->save();
+    }
+
     public function addMoney($val, $dark = false, $history = true) {
-        $this->Wallet->add("money", $val, $history);
+       return $this->Wallet->add("money", $val, $history);
     }
     public function addKeys($val, $history = true) {
-        $this->Wallet->add("key", $val, $history);
+        return $this->Wallet->add("key", $val, $history);
     }
     public function addCoins($val, $history = true) {
-        $this->Wallet->add("coin", $val, $history);
+        return $this->Wallet->add("coin", $val, $history);
     }
 
     public function excahngeKeys($val) {

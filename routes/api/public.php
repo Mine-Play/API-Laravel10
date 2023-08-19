@@ -51,6 +51,9 @@ Route::middleware('api')->group(function () {
         Route::middleware('auth:sanctum')->post('/', 'UserController@me');
         Route::get('/id/{id}', 'UserController@getByID')->whereUuid('id');
         Route::get('/login/{login}', 'UserController@getByLogin');
+        Route::prefix('personal')->group(function () {
+            Route::middleware('auth:sanctum')->post('/changepass', 'UserController@changePassword');
+        });
     });
     Route::prefix('news')->group(function () {
         Route::get('/', 'NewsController@getAll');
@@ -84,5 +87,8 @@ Route::middleware('api')->group(function () {
         Route::get('/', 'ViolationsController@me')->middleware('auth:sanctum');
         //Route::get('/id/{id}', 'NewsController@getByID')->whereUuid('id');
     });
+    // Route::prefix('others')->group(function () {
+    //     Route::get('/recommendations', 'RecommendationsController');
+    // });
 });
 Auth::routes(['verify' => true]);

@@ -2,7 +2,8 @@
     "api": {
         "welcome": "Добро пожаловать! Вы попали в API minecraft проекта MINE-PLAY.RU",
         "users": {
-            "notfound": "Пользователь не найден!"
+            "notfound": "Пользователь не найден!",
+            "successpass": "Вы успешно сменили пароль!"
         },
         "wallet": {
             "notfound": "Кошелек с данным WID не найден!",
@@ -61,6 +62,11 @@
         "errors": {
             "credentials": "Неверный логин или пароль!",
             "already": "Вы уже авторизированы!"
+        }
+    },
+    "auth": {
+        "errors": {
+            "password": "Неверный пароль!"
         }
     },
     "logout": {

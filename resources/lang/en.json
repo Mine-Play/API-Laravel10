@@ -2,7 +2,8 @@
     "api": {
         "welcome": "Welcome! You got into the minecraft API of the project MINE-PLAY.RU",
         "users": {
-            "notfound": "User not found!"
+            "notfound": "User not found!",
+            "successpass": "You successfully changed your password!"
         },
         "wallet": {
             "notfound": "Wallet with current WID not found!",
@@ -51,6 +52,11 @@
                 "regexp": "The password can contain only Latin letters and symbols!"
             },
             "required": "All fields are required!"
+        }
+    },
+    "auth": {
+        "errors": {
+            "password": "Incorrect password!"
         }
     },
     "login": {
