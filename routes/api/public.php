@@ -91,4 +91,8 @@ Route::middleware('api')->group(function () {
     //     Route::get('/recommendations', 'RecommendationsController');
     // });
 });
+
+Route::prefix('storage')->group(function () {
+    
+});
 Auth::routes(['verify' => true]);

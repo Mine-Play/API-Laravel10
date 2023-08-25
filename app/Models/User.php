@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Events\Users\UserRegistered;
 
 use App\Models\Violation;
+use App\Models\Role;
 
 class User extends Authenticatable implements MustVerifyEmail
 
@@ -25,23 +26,20 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $attributes = [
-        'last_login' => null,
-        // 'level' => 1,
-        'role' => 1,
-        'status' => 'online'
+        'last_login' => null
     ];
     protected $fillable = [
         'name',
         'email',
-        // 'ip',
-        'password'
+        'password',
+        'role'
     ];
     protected $hidden = [
         'password', 'remember_token'
     ];
     protected $casts = [
         'created_at'  => 'datetime:Y-m-d H:m:s',
-        'email_verified_at' => 'datetime'
+        'email_verified_at' => 'datetime:Y-m-d H:m:s'
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -103,10 +101,10 @@ class User extends Authenticatable implements MustVerifyEmail
      * User model methods
      */
     public static function getByLogin($login){
-        return User::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'level', 'role', 'status')->first();
+        return User::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
     }
     public static function getByID($id){
-        return User::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'level', 'role', 'status')->first();
+        return User::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
     }
     protected $table = 'Users';
 }

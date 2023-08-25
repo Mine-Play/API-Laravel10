@@ -28,6 +28,7 @@ class UserController extends Controller
         return [
             'username' => $user->name,
             'uuid' => $user->id,
+            'accessToken' => $user->createToken("access_token")->plainTextToken,
             'permissions' => [
                 "perms" => [],
                 'roles' => [ $role->title ],

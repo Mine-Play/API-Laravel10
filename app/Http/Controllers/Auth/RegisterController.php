@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Lang;
 
 use App\Models\User;
+use App\Models\Role;
 
 class RegisterController extends Controller
 {
@@ -129,12 +130,11 @@ class RegisterController extends Controller
     protected function create(Request $request)
     {
         $data = $request->all();
-        //$wallet = Wallet::create();
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'ip' => $request->ip()
+            'role' => Role::default()->id
         ]);
         event(new Registered($user));
         return $user;

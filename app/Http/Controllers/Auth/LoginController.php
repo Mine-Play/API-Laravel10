@@ -29,7 +29,7 @@ class LoginController extends Controller
         //return var_dump($user->tokens()->get()->pluck('token'));
         if (!$user) {
             $user = User::where('email', $credentials["name"])->first();
-            if(!$user || !Hash::check($credentials["password"], $user->password)){
+            if(!$user){
                 return response()->json([
                     'response' => 401,
                     'error' => Lang::get('login.errors.credentials'),
@@ -37,7 +37,13 @@ class LoginController extends Controller
                 ]);
             }
         }
-
+        if(!Hash::check($credentials["password"], $user->password)){
+            return response()->json([
+                'response' => 401,
+                'error' => Lang::get('login.errors.credentials'),
+                'time' => date('H:i', time()) 
+            ]);
+        }
         return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $credentials["name"]);
     }
 

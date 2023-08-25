@@ -16,13 +16,13 @@ class Role extends Model
     protected $connection = 'Global';
 
     protected $fillable = [
-        'title',
-        'color',
-        'index',
-        'permissions'
+        'title', 'color', 'index', 'default', 'permissions'
     ];
     public static function getByID($id){
         return Role::where('id', $id)->select('title', 'color', 'index')->first();
+    }
+    public static function default(){
+        return Role::where('default', 1)->select('id', 'title', 'color', 'index', 'default')->first();
     }
     public static function me(){
         $user = Auth::user();

@@ -1,31 +1,41 @@
 <?php
-
 namespace App\Models\Sanctum;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
  
 class PersonalAccessToken extends SanctumPersonalAccessToken
 {
-    use HasUuids;
+    protected $casts = [
+        'abilities' => 'json',
+        'last_used_at' => 'datetime',
+        'expires_at' => 'datetime',
+    ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'name',
+        'token',
+        'abilities',
+        'expires_at',
         'tokenable_type',
         'tokenable_id'
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array
+     */
     protected $hidden = [
-        'token'
+        'token',
     ];
-    protected $attributes = [
-        'token' => null
-    ];
-    protected $casts = [
-        'last_used_at'  => 'datetime:Y-m-d H:m:s',
-        'expires_at'  => 'datetime:Y-m-d H:m:s',
-        'created_at'  => 'datetime:Y-m-d H:m:s',
-        'updated_at'  => 'datetime:Y-m-d H:m:s'
-    ];
+
+    public function Session()
+    {
+        return $this->belongsTo(Session::class, 'token_id', 'tokenable_id');
+    }
 }

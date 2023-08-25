@@ -26,5 +26,13 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+        $this->renderable(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('launcher/*')) {
+                return response()->json([
+                    'error' => 'auth.invalidtoken',
+                    'time' => date('H:i', time()) 
+                ], 401);
+            }
+        });
     }
 }

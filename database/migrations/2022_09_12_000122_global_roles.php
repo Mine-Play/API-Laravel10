@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('color');
             $table->integer('index');
+            $table->integer('default')->default(0);
             $table->json('permissions');
         });
     }
