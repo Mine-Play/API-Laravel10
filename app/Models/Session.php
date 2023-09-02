@@ -20,12 +20,18 @@ class Session extends Model
         'token_id',
         'place',
         'device',
-        'user_id'
+        'user_id',
+        'attributes'
     ];
 
     public function Token()
     {
         return $this->hasOne(Sanctum\PersonalAccessToken::class, 'token_id', 'tokenable_id');
+    }
+
+    public function kill(){
+        auth()->user()->tokens()->delete();
+        $this->delete();
     }
     public $timestamps = false;
 }

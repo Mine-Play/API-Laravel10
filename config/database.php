@@ -83,25 +83,6 @@ return [
             ]) : [],
         ],
 
-        'Textures' => [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('TEXTURES_DB_HOST', '127.0.0.1'),
-            'port' => env('TEXTURES_DB_PORT', '3306'),
-            'database' => env('TEXTURES_DB_DATABASE', 'forge'),
-            'username' => env('TEXTURES_DB_USERNAME', 'forge'),
-            'password' => env('TEXTURES_DB_PASSWORD', ''),
-            'unix_socket' => env('TEXTURES_DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
 
         'Minigames' => [
             'driver' => 'mysql',
@@ -186,7 +167,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', 'api_'),
         ],
 
         'default' => [
@@ -196,6 +177,7 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'read_write_timeout' => 0,
         ],
 
         'cache' => [

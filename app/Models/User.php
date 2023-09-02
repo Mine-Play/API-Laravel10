@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+
+use Laragear\TwoFactor\TwoFactorAuthentication;
+use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
 
 
 use App\Events\Users\UserRegistered;
@@ -15,10 +19,10 @@ use App\Events\Users\UserRegistered;
 use App\Models\Violation;
 use App\Models\Role;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable
 
 {
-    use HasApiTokens, Notifiable, HasUuids;
+    use HasApiTokens, Notifiable, HasUuids, TwoFactorAuthentication;
 
     /**
      * The attributes that are mass assignable.
@@ -26,20 +30,30 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $attributes = [
-        'last_login' => null
+        'last_login' => null,
+        'referal' => null,
+        'skin' => 0,
+        'cloak' => 0,
+        'avatar' => 0,
+        'banner' => 0,
+        'level' => 1,
+        'exp' => 0
     ];
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'level',
+        'exp'
     ];
     protected $hidden = [
-        'password', 'remember_token'
+        'password', 'remember_token', 'params'
     ];
     protected $casts = [
         'created_at'  => 'datetime:Y-m-d H:m:s',
-        'email_verified_at' => 'datetime:Y-m-d H:m:s'
+        'email_verified_at' => 'datetime:Y-m-d H:m:s',
+        'params' => 'array'
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -64,6 +78,11 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->save();
     }
 
+    public function changeEmail($newmail){
+        $this->email = $newmail;
+        $this->save();
+    }
+
     public function addMoney($val, $dark = false, $history = true) {
        return $this->Wallet->add("money", $val, $history);
     }
@@ -83,6 +102,52 @@ class User extends Authenticatable implements MustVerifyEmail
     public function unban($moderator, $reason) {
         $this->Violations->where("type", "ban")->first()->delete();
     }
+
+    public function skin() {
+        switch($this->skin){
+            case 1:
+                $path = Storage::url('/users/'.$this->id.'skins/skin.png');
+                $type = $this->params["skin"]["type"];
+                break;
+            default:
+                $path = Storage::url(env('TEXTURES_DEFAULT_SKIN_URL', '/users/default/skin.png'));
+                $type = env('TEXTURES_DEFAULT_SKIN_TYPE', 'default');
+                break;
+        }
+        return [
+            "path" => $path,
+            "type" => $type
+        ];
+    }
+    public function cloak() {
+        switch($this->cloak){
+            case 1:
+                $path = Storage::url('/users/'.$this->id.'cloaks/cloak.png');
+                break;
+            default:
+                return null;
+                break;
+        }
+        return [
+            "path" => $path
+        ];
+    }
+    public function avatar() {
+        switch($this->avatar){
+            case 1:
+                $path = Storage::url('/users/'.$this->id.'skins/skin.png');
+                $type = "INDEV";
+                break;
+            default:
+                $path = Storage::url(env('TEXTURES_DEFAULT_SKIN_URL', '/users/default/skin.png'));
+                $type = env('TEXTURES_DEFAULT_SKIN_TYPE', 'default');
+                break;
+        }
+        return [
+            "path" => $path,
+            "type" => $type
+        ];
+    }
     protected $dispatchesEvents = [
         'created' => UserRegistered::class
     ];
@@ -95,6 +160,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function Wallet()
     {
         return $this->hasOne(Wallet\Instance::class, 'id', 'id');
+    }
+
+    public function Sessions()
+    {
+        return $this->hasMany(Session::class, 'user_id', 'id');
     }
     
     /**

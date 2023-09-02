@@ -18,6 +18,7 @@ use App\Helpers\Lang;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\VipReferal;
 
 class RegisterController extends Controller
 {
@@ -130,11 +131,23 @@ class RegisterController extends Controller
     protected function create(Request $request)
     {
         $data = $request->all();
+        if(!$referal = VipReferal::where('referal', $data["referal"])->select('id')->first()){
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => Role::default()->id,
+                'referal' => null
+            ]);
+            event(new Registered($user));
+            return $user;
+        }
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => Role::default()->id
+            'role' => Role::default()->id,
+            'referal' => $referal->id
         ]);
         event(new Registered($user));
         return $user;

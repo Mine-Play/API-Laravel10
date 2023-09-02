@@ -24,7 +24,9 @@
         "email": {
             "verify": {
                 "already": "Your E-mail already confirmed!",
-                "success": "You're successfully confirmed E-mail"
+                "success": "You're successfully confirmed E-mail",
+                "notvalid": "Link not correct or it was expired!",
+                "resend": "A confirmation email has been sent to the specified email address."
             }
         }
     },

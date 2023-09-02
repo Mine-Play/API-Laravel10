@@ -9,16 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    protected $connection = 'Textures';
+    protected $connection = 'Global';
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('Vip_referals', function (Blueprint $table) {
             $table->uuid('id')->unique();
-            $table->integer('skin')->default(0);
-            $table->integer('cloak')->default(0);
-            $table->integer('avatar')->default(0);
-            $table->integer('banner')->default(0);
-            $table->json('params')->nullable();
+            $table->uuid('author_id');
+            $table->string('referal')->unique();
+            $table->integer('percents');
         });
     }
 

@@ -25,6 +25,7 @@ class RouteServiceProvider extends ServiceProvider
     protected $public_namespace = "App\Http\Controllers";
     protected $admin_namespace = "App\Http\Controllers\Admin";
     protected $launcher_namespace = "App\Http\Controllers\Launcher";
+    protected $server_namespace = "App\Http\Controllers\Server";
     //protected $textures_namespace = "App\Http\Controllers\Textures";
     public function boot(): void
     {
@@ -37,7 +38,7 @@ class RouteServiceProvider extends ServiceProvider
             //Route::namespace($this->public_namespace)->prefix("textures")->group(base_path('routes/api/textures.php'));
             Route::namespace($this->admin_namespace)->prefix("admin")->group(base_path('routes/api/admin.php'));
             Route::namespace($this->launcher_namespace)->prefix("launcher")->group(base_path('routes/launcher.php'));
-            Route::namespace($this->admin_namespace)->prefix("plugins")->group(base_path('routes/plugins.php'));
+            Route::namespace($this->server_namespace)->middleware('token:server')->prefix("server")->group(base_path('routes/server.php'));
         });
     }
 }

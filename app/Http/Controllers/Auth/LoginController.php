@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Session;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Lang;
+use Stevebauman\Location\Facades\Location;
 
 class LoginController extends Controller
 {
@@ -44,20 +47,42 @@ class LoginController extends Controller
                 'time' => date('H:i', time()) 
             ]);
         }
-        return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $credentials["name"]);
+        if($user->email_verified_at == null){
+            $email = false;
+        }
+        return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $user, $email = true);
     }
 
     public function refresh()
     {
         return $this->respondWithToken(auth()->refresh());
     }
-    protected function respondWithToken($token, $login)
+    protected function respondWithToken($token, $user, $email = true)
     {
+        $agent = new \Jenssegers\Agent\Agent;
+        if($ip = Request::ip() == '127.0.0.1'){
+            $location = Location::get('88.201.206.74');
+        }else{
+            $location = Location::get(Request::ip());
+        }
+        $session = Session::create([
+            "user_id" => $user->id,
+            "token_id" => explode("|", $token)[0],
+            "place" => 'Site',
+            'device' => $agent->platform(),
+            'attributes' => [
+                "browser" => $agent->browser(),
+                'country' => $location->countryName,
+                'city' => $location->cityName
+            ]
+        ]);
         return response()->json([
             'response' => 200,
-            'message' => Lang::get('login.messages.successful', ["nickname" => $login]),
+            'message' => Lang::get('login.messages.successful', ["nickname" => $user->name]),
                 'access_token' => $token,
                 'token_type' => 'bearer',
+                'session_id' => $session->id,
+                'email' => $email,
                 'time' => date('H:i', time()) 
         ]);
     }

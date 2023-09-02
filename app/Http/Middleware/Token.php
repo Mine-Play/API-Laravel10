@@ -16,7 +16,12 @@ class Token
         $response = $next($request);
         switch($source){
             case "launcher":
-                if($request->bearerToken() === "txsbDg{wC9JZwF8G~3A7GLMPKC1myXnK"){
+                if($request->bearerToken() === env('API_LAUNCHER_KEY')){
+                    return $response;
+                }
+                break;
+            case "server":
+                if($request->bearerToken() === env('API_SERVER_KEY')){
                     return $response;
                 }
                 break;

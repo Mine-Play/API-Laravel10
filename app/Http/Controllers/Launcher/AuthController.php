@@ -44,7 +44,7 @@ class AuthController extends Controller
     public function checkServer() {
         $data = request(['username', 'serverId']);
         $user = User::where("name", $data["username"])->select("id")->first();
-        $serverId = Session::where("user_id", $user->id)->select("attributes")->first()->attributes;
+        $serverId = Session::where([["user_id", "=", $user->id], ["place", "=", "Launcher"]])->select("attributes")->first()->attributes;
         if(json_decode($serverId)->serverId != $data["serverId"]){
             return response()->json([
                 'error' => 'auth.invalidtoken',
@@ -85,6 +85,7 @@ class AuthController extends Controller
                 'time' => date('H:i', time()) 
             ], 500);
         }
+        Session::where([['user_id', "=", User::where('name', $credentials["login"])->first()->id], ["place", "=", "Launcher"]])->select('id')->delete();
         $token = $user->createToken("access_token")->plainTextToken;
         if(!$credentials["minecraftAccess"]){
             return response()->json([
@@ -110,7 +111,8 @@ class AuthController extends Controller
                 "user_id" => User::where("name", $login)->select("id")->first()->id,
                 "token_id" => explode("|", $token)[0],
                 "place" => 'Launcher',
-                'device' => 'Desktop'
+                'device' => 'Desktop',
+                'attributes' => null
             ]);
         }
         return [
@@ -125,6 +127,7 @@ class AuthController extends Controller
             $user = User::where('email', $login)->first();
         }
         $role = Role::getByID($user->role);
+        $skin = $user->skin();
         return [
             'username' => $user->name,
             'uuid' => $user->id,
@@ -135,9 +138,11 @@ class AuthController extends Controller
             ],
             'assets' => [
                 'SKIN' => [
-                    'url' => "https://mpapi.uniondev.ru/launcher/skins/".$user->name.".png",
+                    'url' => $skin["path"],
                     'digest' => '',
-                    'metadata' => []
+                    'metadata' => [
+                        "model" => $skin["type"]
+                    ]
                 ],
                 'properties' => ['key' => 'value']
             ]

@@ -23,6 +23,15 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_login')->nullable();
+            $table->integer('skin')->default(0);
+            $table->integer('cloak')->default(0);
+            $table->integer('avatar')->default(0);
+            $table->integer('banner')->default(0);
+            $table->integer('level')->default(1);
+            $table->integer('exp')->default(0);
+            $table->string('totp')->nullable();
+            $table->string('referal')->nullable();
+            $table->json('params')->nullable();
         });
     }
     public function down()

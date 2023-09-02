@@ -25,6 +25,7 @@ class UserController extends Controller
     }
     private function HttpUser($user){
         $role = Role::getByID($user->role);
+        $skin = $user->skin();
         return [
             'username' => $user->name,
             'uuid' => $user->id,
@@ -35,9 +36,11 @@ class UserController extends Controller
             ],
             'assets' => [
                 'SKIN' => [
-                    'url' => "https://example.com/skins/".$user->name.".png",
+                    'url' => $skin["path"],
                     'digest' => '',
-                    'metadata' => []
+                    'metadata' => [
+                        "model" => $skin["type"]
+                    ]
                 ],
                 'properties' => ['key' => 'value']
             ]
