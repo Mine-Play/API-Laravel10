@@ -1,11 +1,8 @@
 <x-mail::message>
-# Introduction
+# Код подтверждения
 
-The body of your message.
-
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+Спасибо за регистрацию на <a href="https://mine-play.ru">Mine-Play.Ru</a>
+Your five-digit code is <br> <b>{{$pin}}</b>
 
 Thanks,<br>
 {{ config('app.name') }}

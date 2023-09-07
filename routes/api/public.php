@@ -40,8 +40,8 @@ Route::middleware('api')->prefix('auth')->group(function () {
 });
 
 Route::middleware('api')->prefix('email')->group(function () {
-    Route::post('/verify/resend', 'Auth\VerificationController@resend')->middleware(['auth:sanctum', 'throttle:6,1'])->name('email.resend');
-    Route::get('/verify/{id}/{hash}', 'VerificationController@verify')->middleware(['signed', 'auth:sanctum', 'throttle:6,1'])->name('email.verify');
+    Route::post('/verify/resend', 'Auth\VerificationController@resend')->middleware(['auth:sanctum', 'throttle:1,1'])->name('email.resend');
+    Route::post('/verify/pin', 'Auth\VerificationController@verify')->middleware(['auth:sanctum', 'throttle:6,1'])->name('email.verify');
 });
 
 Route::middleware('api')->group(function () {

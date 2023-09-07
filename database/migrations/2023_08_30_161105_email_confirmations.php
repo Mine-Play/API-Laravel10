@@ -9,13 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    protected $connection = 'Global';
+    protected $connection = 'Site';
     public function up(): void
     {
-        Schema::create('email_confirmations', function (Blueprint $table) {
+        Schema::create('Email_confirmations', function (Blueprint $table) {
             $table->string('email')->index();
             $table->integer('pin');
-            $table->timestamp('created_at');
         });
     }
 

@@ -8,8 +8,10 @@ use App\Models\Session;
 use App\Http\Controllers\Controller;
 use Request;
 use Illuminate\Support\Facades\Hash;
-use App\Helpers\Lang;
 use Stevebauman\Location\Facades\Location;
+
+use App\Helpers\Lang;
+use App\Helpers\Email;
 
 class LoginController extends Controller
 {
@@ -47,10 +49,13 @@ class LoginController extends Controller
                 'time' => date('H:i', time()) 
             ]);
         }
-        if($user->email_verified_at == null){
-            $email = false;
+        if($user->email_verified_at == NULL){
+            $email = [
+                "status" => false,
+                "obsuficated" => Email::obusficate($user->email)
+            ];
         }
-        return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $user, $email = true);
+        return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $user, $email);
     }
 
     public function refresh()

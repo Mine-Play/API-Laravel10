@@ -9,12 +9,17 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
 
+use App\Mail\VerifyEmail;
+
 use App\Helpers\Lang;
+
 
 use App\Models\User;
 use App\Models\Role;
@@ -97,6 +102,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', "min:3", 'max:18', 'unique:Users', 'regex:/^[a-zA-Z0-9_]+$/'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:Users'],
             'password' => ['required', 'string', 'min:8', 'max:40'],
+            'referal' => ['required']
         ], [
             /**
              * Name
@@ -139,7 +145,15 @@ class RegisterController extends Controller
                 'role' => Role::default()->id,
                 'referal' => null
             ]);
-            event(new Registered($user));
+            $pin = rand(10000, 99999);
+            DB::connection('Site')->table('Email_confirmations')
+            ->insert(
+                [
+                    'email' => $request->all()['email'], 
+                    'pin' => $pin
+                ]
+            );
+            Mail::to($data['email'])->send(new VerifyEmail($pin));
             return $user;
         }
         $user = User::create([
@@ -149,7 +163,15 @@ class RegisterController extends Controller
             'role' => Role::default()->id,
             'referal' => $referal->id
         ]);
-        event(new Registered($user));
+        $pin = rand(10000, 99999);
+        DB::connection('Site')->table('Email_confirmations')
+        ->insert(
+            [
+                'email' => $request->all()['email'], 
+                'pin' => $pin
+            ]
+        );
+        Mail::to($data['email'])->send(new VerifyEmail($pin));
         return $user;
     }
     protected function respondWithToken($token, $login)
