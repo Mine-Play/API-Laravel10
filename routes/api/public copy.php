@@ -27,7 +27,7 @@ use App\Controller;
 
 
 Route::get('/', 'HomeController');
-Route::middleware('api')->prefix('auth')->group(function () {
+Route::prefix('auth')->group(function () {
     Route::post('login', 'Auth\LoginController@login');
     /**
      * Authenticated
@@ -39,12 +39,11 @@ Route::middleware('api')->prefix('auth')->group(function () {
     Route::post('register', 'Auth\RegisterController@register');
 });
 
-Route::middleware('api')->prefix('email')->group(function () {
+Route::prefix('email')->group(function () {
     Route::post('/verify/resend', 'Auth\VerificationController@resend')->middleware(['auth:sanctum', 'throttle:1,1'])->name('email.resend');
     Route::post('/verify/pin', 'Auth\VerificationController@verify')->middleware(['auth:sanctum', 'throttle:6,1'])->name('email.verify');
 });
 
-Route::middleware('api')->group(function () {
     Route::prefix('users')->group(function () {
         Route::middleware(['auth:sanctum', 'verified'])->post('/me', 'UserController@me');
         Route::middleware(['auth:sanctum', 'verified'])->post('/', 'UserController@me');
@@ -98,7 +97,6 @@ Route::middleware('api')->group(function () {
     // Route::prefix('others')->group(function () {
     //     Route::get('/recommendations', 'RecommendationsController');
     // });
-});
 
 Route::prefix('storage')->group(function () {
     Route::prefix('users')->group(function () {

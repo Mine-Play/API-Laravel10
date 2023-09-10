@@ -28,6 +28,15 @@
                 "notvalid": "Link not correct or it was expired!",
                 "resend": "A confirmation email has been sent to the specified email address."
             }
+        },
+        "storage": {
+            "skins": {
+                "notfound": "File not found!",
+                "invalid": "The file must be in .png format!",
+                "size": "There are not enough money on your account to install an HD skin",
+                "bigsize": "The file is too large. The maximum file size is 1024×512px",
+                "type": "Unsupported skin type."
+            }
         }
     },
     "permissions": {

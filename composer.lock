@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a0b98c44488aed99120549e591d4f4e",
+    "content-hash": "69cd0ad803d8c63c435ccb40ad737059",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7053,6 +7053,106 @@
                 }
             ],
             "time": "2023-02-16T16:29:41+00:00"
+        },
+        {
+            "name": "unetway/laravel-robokassa",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unetway/laravel-robokassa.git",
+                "reference": "16492533fc56853bfc7eed53c77cb2a757cd050a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unetway/laravel-robokassa/zipball/16492533fc56853bfc7eed53c77cb2a757cd050a",
+                "reference": "16492533fc56853bfc7eed53c77cb2a757cd050a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "guzzlehttp/guzzle": ">=6.3",
+                "php": ">=7.4",
+                "unetway/robokassa": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Unetway\\LaravelRobokassa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cherepanov Ilya",
+                    "email": "support@unetway.com"
+                }
+            ],
+            "description": "Пакет для работы с Робокассой в Laravel",
+            "homepage": "https://github.com/unetway/laravel-robokassa",
+            "keywords": [
+                "laravel",
+                "payment",
+                "recurrent",
+                "robokassa"
+            ],
+            "support": {
+                "issues": "https://github.com/unetway/laravel-robokassa/issues",
+                "source": "https://github.com/unetway/laravel-robokassa/tree/v0.1.2"
+            },
+            "time": "2023-02-23T08:56:27+00:00"
+        },
+        {
+            "name": "unetway/robokassa",
+            "version": "v0.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unetway/robokassa.git",
+                "reference": "e6285de00d8bb6cdc803fadc11a5ab78b35fce2e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unetway/robokassa/zipball/e6285de00d8bb6cdc803fadc11a5ab78b35fce2e",
+                "reference": "e6285de00d8bb6cdc803fadc11a5ab78b35fce2e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "guzzlehttp/guzzle": ">=6.3",
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Unetway\\Robokassa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cherepanov Ilya",
+                    "email": "support@unetway.com"
+                }
+            ],
+            "description": "Пакет для работы с Робокассой",
+            "homepage": "https://github.com/unetway/robokassa",
+            "keywords": [
+                "payment",
+                "recurrent",
+                "robokassa"
+            ],
+            "support": {
+                "issues": "https://github.com/unetway/robokassa/issues",
+                "source": "https://github.com/unetway/robokassa/tree/v0.1.3"
+            },
+            "time": "2023-06-10T14:42:10+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

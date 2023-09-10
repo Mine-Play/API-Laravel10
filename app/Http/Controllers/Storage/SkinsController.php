@@ -6,7 +6,13 @@ use App\Helpers\Lang;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Validator;
+use Illuminate\Http\Request;
+
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
  
 class SkinsController extends Controller
 {
@@ -17,32 +23,45 @@ class SkinsController extends Controller
     {      
         return response()->json(['response' => 200, 'data' => User::where('name', $name)->select('skin', 'id')->first()->skin(), 'time' => date('H:i', time()) ]);
     }
-    public function upload(){
-        if(!$request->hasFile('fileName')) {
-            return response()->json(['upload_file_not_found'], 400);
+    public function upload(Request $request){
+        if(!$request->hasFile('skin')) {
+            return \Response::json([
+                'response' => 4001,
+                'error' => Lang::get('api.storage.skins.notfound'),
+                'time' => date('H:i', time()) 
+            ]);
         }
-     
-        $allowedfileExtension=['pdf','jpg','png'];
-        $files = $request->file('fileName'); 
-        $errors = [];
-     
-        foreach ($files as $file) {      
-     
-            $extension = $file->getClientOriginalExtension();
-     
-            $check = in_array($extension,$allowedfileExtension);
-     
-            if($check) {
-                foreach($request->fileName as $mediaFiles) {
-     
-                    $path = $mediaFiles->store('public/images');
-                    $name = $mediaFiles->getClientOriginalName();
-                }
-            } else {
-                return response()->json(['invalid_file_format'], 422);
-            }
-     
-            return response()->json(['file_uploaded'], 200);
-    }
+        $file = $request->file('skin'); 
+        $validator = Validator::make($request->all(), [
+            'skin' => ['image' => 'required', 'mimes:png', File::image()->dimensions(Rule::dimensions()->maxWidth(1024)->maxHeight(512))],
+            'type' => ['required']
+        ], [
+            'skin.mimes' => Lang::get("api.storage.skins.invalid"),
+            'skin.dimensions' => Lang::get("api.storage.skins.bigsize"),
+            'required' => __('register')["errors"]['required']
+        ]);
+        if ($validator->fails()){
+            $errors = $validator->errors();
+ 
+            return \Response::json([
+                'response' => 4002,
+                'error' => $errors->all(':message')[0],
+                'time' => date('H:i', time()) 
+            ]);
+         }
+         if($request->type == "default" || $request->type == "slim"){
+            $user = Auth::user();
+            $path = $request->file('skin')->storeAs('/users/'.$user->id.'/skins', 'skin.png');
+            $user->setSkin($request->type);
+            return \Response::json([
+               'response' => 200,
+               'time' => date('H:i', time()) 
+           ]);
+         }
+         return \Response::json([
+            'response' => 4003,
+            'error' => Lang::get("api.storage.skins.type"),
+            'time' => date('H:i', time()) 
+        ]);
 }
 }

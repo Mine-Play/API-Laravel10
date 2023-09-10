@@ -106,7 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     public function skin() {
         switch($this->skin){
             case 1:
-                $path = Storage::url('/users/'.$this->id.'skins/skin.png');
+                $path = Storage::url('/users/'.$this->id.'/skins/skin.png?v='.Storage::lastModified('/users/'.$this->id.'/skins/skin.png'));
                 $type = $this->params["skin"]["type"];
                 break;
             default:
@@ -118,6 +118,15 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
             "path" => $path,
             "type" => $type
         ];
+    }
+    public function setSkin($type){
+        $this->skin = 1;
+        if($this->params == null){
+            $this->params = array("skin" => ["type" => $type]);
+        }else{
+            $this->params = array_merge($this->params, array("skin" => ["type" => $type]));
+        }
+        $this->save();
     }
     public function cloak() {
         switch($this->cloak){

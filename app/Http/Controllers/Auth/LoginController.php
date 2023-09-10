@@ -49,6 +49,7 @@ class LoginController extends Controller
                 'time' => date('H:i', time()) 
             ]);
         }
+        $email = true;
         if($user->email_verified_at == NULL){
             $email = [
                 "status" => false,

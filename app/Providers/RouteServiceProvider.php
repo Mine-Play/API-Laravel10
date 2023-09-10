@@ -34,7 +34,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
-            Route::namespace($this->public_namespace)->group(base_path('routes/api/public.php'));
+            Route::namespace($this->public_namespace)->middleware("api")->group(base_path('routes/api/public.php'));
             //Route::namespace($this->public_namespace)->prefix("textures")->group(base_path('routes/api/textures.php'));
             Route::namespace($this->admin_namespace)->prefix("admin")->group(base_path('routes/api/admin.php'));
             Route::namespace($this->launcher_namespace)->prefix("launcher")->group(base_path('routes/launcher.php'));
