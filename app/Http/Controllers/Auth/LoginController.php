@@ -8,10 +8,17 @@ use App\Models\Session;
 use App\Http\Controllers\Controller;
 use Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Stevebauman\Location\Facades\Location;
 
 use App\Helpers\Lang;
 use App\Helpers\Email;
+
+use App\Mail\VerifyEmail;
+
+use Carbon\Carbon;
+
 
 class LoginController extends Controller
 {
@@ -51,9 +58,19 @@ class LoginController extends Controller
         }
         $email = true;
         if($user->email_verified_at == NULL){
+            $select = DB::connection('Site')->table('Email_confirmations')
+            ->where('email', $user->email);
+            if(!Carbon::parse($select->first()->created_at)->addHour()->gte(Carbon::now()->toDateTimeString())){
+                $pin = random_int(10000, 99999);
+                DB::connection('Site')->table('Email_confirmations')->where('email', $user->email)->update([
+                    'pin' =>  $pin,
+                    'created_at' => Carbon::now()->toDateTimeString()
+                ]);
+                Mail::to($user->email)->send(new VerifyEmail($pin));
+            }
             $email = [
                 "status" => false,
-                "obsuficated" => Email::obusficate($user->email)
+                "obusficated" => Email::obusficate($user->email)
             ];
         }
         return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $user, $email);

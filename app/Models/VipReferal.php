@@ -20,4 +20,5 @@ class VipReferal extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+    protected $table = 'Vip_referals';
 }

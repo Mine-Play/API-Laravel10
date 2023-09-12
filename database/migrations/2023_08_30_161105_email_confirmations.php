@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('Email_confirmations', function (Blueprint $table) {
             $table->string('email')->index();
             $table->integer('pin');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

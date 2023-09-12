@@ -40,8 +40,8 @@ class VerificationController extends Controller
         }
         $select = DB::connection('Site')->table('Email_confirmations')
             ->where('email', Auth::user()->email)
-            ->where('pin', $request->pin);
-    
+            ->where('pin', $request->pin)
+            ->whereDate('created_at', '<=', Carbon::now()->toDateTimeString());
         if ($select->get()->isEmpty()) {
             return \Response::json([
                 'response' => 4001,
@@ -87,7 +87,10 @@ class VerificationController extends Controller
                 'time' => date('H:i', time()) 
             ]);
         }
-    
+        $select = DB::connection('Site')->table('Email_confirmations')->where('email', Auth::user()->email)->first();
+        if($select != NULL){
+            DB::connection('Site')->table('Email_confirmations')->where('email', Auth::user()->email)->delete();
+        }
         $pin = random_int(10000, 99999);
         $password_reset = DB::connection('Site')->table('Email_confirmations')->insert([
             'email' => $request->all()['email'],
