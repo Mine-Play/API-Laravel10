@@ -58,18 +58,32 @@ class LoginController extends Controller
         }
         $email = true;
         if($user->email_verified_at == NULL){
+            $code = "old";
             $select = DB::connection('Site')->table('Email_confirmations')
             ->where('email', $user->email);
-            if(!Carbon::parse($select->first()->created_at)->addHour()->gte(Carbon::now()->toDateTimeString())){
+            if($select->first() == NULL){
+                $code = "new";
                 $pin = random_int(10000, 99999);
-                DB::connection('Site')->table('Email_confirmations')->where('email', $user->email)->update([
+                DB::connection('Site')->table('Email_confirmations')->insert([
+                    'email' => $user->email,
                     'pin' =>  $pin,
                     'created_at' => Carbon::now()->toDateTimeString()
                 ]);
                 Mail::to($user->email)->send(new VerifyEmail($pin));
+            }else{
+                if(!Carbon::parse($select->first()->created_at)->addHour()->gte(Carbon::now()->toDateTimeString())){
+                    $code = "new";
+                    $pin = random_int(10000, 99999);
+                    DB::connection('Site')->table('Email_confirmations')->where('email', $user->email)->update([
+                        'pin' =>  $pin,
+                        'created_at' => Carbon::now()->toDateTimeString()
+                    ]);
+                    Mail::to($user->email)->send(new VerifyEmail($pin));
+                }   
             }
             $email = [
                 "status" => false,
+                "code" => $code,
                 "obusficated" => Email::obusficate($user->email)
             ];
         }
@@ -83,7 +97,7 @@ class LoginController extends Controller
     protected function respondWithToken($token, $user, $email = true)
     {
         $agent = new \Jenssegers\Agent\Agent;
-        if($ip = Request::ip() == '127.0.0.1'){
+        if(Request::ip() == '127.0 .0 .1' || Request::ip() == 'localhost' || Request::ip() == '127.0.0.1'){
             $location = Location::get('88.201.206.74');
         }else{
             $location = Location::get(Request::ip());
