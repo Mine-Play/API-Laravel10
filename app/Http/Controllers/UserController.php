@@ -29,6 +29,7 @@ class UserController extends Controller
     public function me()
     {
         $user = Auth::user();
+        die(\App\Helpers\Avatar::classic($user->skin()["path"]));
          $wallet = Wallet\Instance::me();
          $role = Role::me();
          $user->wallet = [
