@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
 
+use Stevebauman\Location\Facades\Location;
+
 use Illuminate\Http\Request;
 
 use App\Mail\VerifyEmail;
@@ -24,6 +26,7 @@ use App\Helpers\Lang;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\VipReferal;
+use App\Models\Session;
 
 class RegisterController extends Controller
 {
@@ -94,7 +97,7 @@ class RegisterController extends Controller
           * Generate token
           */
         $token = $user->createToken('access_token')->plainTextToken;
-        return $this->respondWithToken($token, $request->all()["name"]);
+        return $this->respondWithToken($token, $user);
     }
     protected function validator(array $data)
     {
@@ -173,12 +176,30 @@ class RegisterController extends Controller
         Mail::to($data['email'])->send(new VerifyEmail($pin));
         return $user;
     }
-    protected function respondWithToken($token, $login)
+    protected function respondWithToken($token, $user)
     {
+        $agent = new \Jenssegers\Agent\Agent;
+        if(\Request::ip() == '127.0 .0 .1' || \Request::ip() == 'localhost' || \Request::ip() == '127.0.0.1'){
+            $location = Location::get('88.201.206.74');
+        }else{
+            $location = Location::get(\Request::ip());
+        }
+        $session = Session::create([
+            "user_id" => $user->id,
+            "token_id" => explode("|", $token)[0],
+            "place" => 'Site',
+            'device' => $agent->platform(),
+            'attributes' => [
+                "browser" => $agent->browser(),
+                'country' => $location->countryName,
+                'city' => $location->cityName
+            ]
+        ]);
         return response()->json([
             'response' => 200,
-            'message' => Lang::get("register.messages.successful", ["nickname" => $login]),
+            'message' => Lang::get("register.messages.successful", ["nickname" => $user->name]),
             'access_token' => $token,
+            'session_id' => $session->id,
             'token_type' => 'bearer',
             'time' => date('H:i', time()) 
         ]);

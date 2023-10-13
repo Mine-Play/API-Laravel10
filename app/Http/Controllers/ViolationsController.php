@@ -9,8 +9,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ViolationsController extends Controller
 {
-    public function me(){
+    public function me(Request $request){
         $user = Auth::user();
-        return response()->json(['response' => 200, 'data' => $user->Violations, 'time' => date('H:i', time()) ]);
+        switch($request->type){
+            case "ban":
+                $violations = $user->Violations->where("type", "ban");
+                break;
+            default:
+                $violations = $user->Violations;
+                break;
+        }
+        return response()->json(['response' => 200, 'data' => $violations, 'time' => date('H:i', time()) ]);
     }
 }

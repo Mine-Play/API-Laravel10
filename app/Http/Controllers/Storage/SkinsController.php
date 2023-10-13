@@ -23,6 +23,52 @@ class SkinsController extends Controller
     {      
         return response()->json(['response' => 200, 'data' => User::where('name', $name)->select('skin', 'id')->first()->skin(), 'time' => date('H:i', time()) ]);
     }
+    public function choose(Request $request){
+        $validator = Validator::make($request->all(), [
+            'skin' => ['required']
+        ], [
+            'required' => __('register')["errors"]['required']
+        ]);
+        if ($validator->fails()){
+            $errors = $validator->errors();
+            return \Response::json([
+                'response' => 4002,
+                'error' => $errors->all(':message')[0],
+                'time' => date('H:i', time()) 
+            ]);
+         }
+        switch($request->skin){
+            case "steve":
+                $user = Auth::user();
+                $user->setSkin(null, 2, array("skin" => ["type" => "slim", "name" => "steve"]));
+
+                $path = Storage::url('/users/default/skins/steve.png');
+                $type = "default";
+                break;
+            case "play":
+                $user = Auth::user();
+                $user->setSkin(null, 2, array("skin" => ["type" => "slim", "name" => "play"]));
+
+                $path = Storage::url('/users/default/skins/play.png');
+                $type = "slim";
+                break;
+            default:
+                $user = Auth::user();
+                $user->setSkin(null, 2, array("skin" => ["type" => "slim", "name" => "steve"]));
+
+                $path = Storage::url('/users/default/skins/steve.png');
+                $type = "default";
+                break;
+        }
+        return \Response::json([
+            'response' => 200,
+            'skin' => [
+                 "path" => $path,
+                 "type" => $type
+            ],
+            'time' => date('H:i', time()) 
+        ]);
+    }
     public function upload(Request $request){
         if(!$request->hasFile('skin')) {
             return \Response::json([
@@ -55,6 +101,10 @@ class SkinsController extends Controller
             $user->setSkin($request->type);
             return \Response::json([
                'response' => 200,
+               'skin' => [
+                    "path" => $path,
+                    "type" => $request->type
+               ],
                'time' => date('H:i', time()) 
            ]);
          }

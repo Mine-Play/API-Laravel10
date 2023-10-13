@@ -29,7 +29,6 @@ class UserController extends Controller
     public function me()
     {
         $user = Auth::user();
-        die(\App\Helpers\Avatar::classic($user->skin()["path"]));
          $wallet = Wallet\Instance::me();
          $role = Role::me();
          $user->wallet = [
@@ -42,7 +41,11 @@ class UserController extends Controller
             "title" => $role->title,
             "color" => $role->color
          ];
-         $user->skin = $user->skin();
+        $user->skin = $user->skin();
+        $user->cloak = $user->cloak();
+        $user->banner = $user->banner();
+        $user->registered_at = $user->daysAfterRegister();
+        $user->password_status = $user->passwordStatus();
         return response()->json(['response' => 200, 'data' => $user, 'time' => date('H:i', time()) ]);
     }
     public function changePassword(Request $request){

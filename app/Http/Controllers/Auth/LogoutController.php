@@ -21,7 +21,7 @@ class LogoutController extends Controller
     {
         
         $request->user()->currentAccessToken()->delete();
-
+        
         return response()->json([
             'respone' => 200,
             'message' => Lang::get('logout.message'),

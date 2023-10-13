@@ -107,6 +107,7 @@ Route::prefix('storage')->group(function () {
             Route::get('/uuid/{uuid}', 'Storage\SkinsController@uuid');
             Route::get('/library', 'Storage\SkinsController@library');
             Route::post('/upload', 'Storage\SkinsController@upload')->middleware(['auth:sanctum', 'verified']);
+            Route::post('/set', 'Storage\SkinsController@choose')->middleware(['auth:sanctum', 'verified']);
         });
         Route::prefix('cloaks')->group(function () {
             Route::get('/name/{name}', 'Storage\CloaksController@name');
