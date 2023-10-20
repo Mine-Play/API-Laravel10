@@ -97,14 +97,11 @@ class SkinsController extends Controller
          }
          if($request->type == "default" || $request->type == "slim"){
             $user = Auth::user();
-            $path = $request->file('skin')->storeAs('/users/'.$user->id.'/skins', 'skin.png');
+            $request->file('skin')->storeAs('/users/'.$user->id.'/', 'skin.png');
             $user->setSkin($request->type);
             return \Response::json([
                'response' => 200,
-               'skin' => [
-                    "path" => $path,
-                    "type" => $request->type
-               ],
+               'skin' => $user->skin(),
                'time' => date('H:i', time()) 
            ]);
          }

@@ -183,7 +183,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     public function avatar() {
         switch($this->avatar){
             case 1:
-                $path = Storage::url('/users/'.$this->id.'skins/skin.png');
+                $path = Storage::url('/users/'.$this->id.'/skin.png');
                 $type = "INDEV";
                 break;
             default:
