@@ -23,7 +23,7 @@ class ViolationsController extends Controller
                 'time' => date('H:i', time()) 
             ]);
         }
-        $user = User::find($data["user"]);
+        $user = User\Instance::find($data["user"]);
         if(count($user->Violations->where("type", "ban")) != 0){
             return response()->json([
                 'response' => 20001,
@@ -43,7 +43,7 @@ class ViolationsController extends Controller
 
     public function unban(Request $request){
         $data = $request->all();
-        $user = User::find($data["user"]);
+        $user = User\Instance::find($data["user"]);
         if(count($user->Violations->where("type", "ban")) == 0){
             return response()->json([
                 'response' => 20001,

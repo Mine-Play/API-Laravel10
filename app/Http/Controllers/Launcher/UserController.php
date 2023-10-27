@@ -18,10 +18,10 @@ class UserController extends Controller
     // }
 
     public function getByName($name){
-        return response()->json($this->HttpUser(User::getByLogin($name)));
+        return response()->json($this->HttpUser(User\Instance::getByLogin($name)));
     }
     public function getByUuid($uuid){
-        return response()->json($this->HttpUser(User::getById($uuid)));
+        return response()->json($this->HttpUser(User\Instance::getById($uuid)));
     }
     private function HttpUser($user){
         $role = Role::getByID($user->role);

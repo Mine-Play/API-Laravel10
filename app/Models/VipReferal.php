@@ -18,7 +18,7 @@ class VipReferal extends Model
     public $timestamps = false;
     public function Author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User\Instance::class, 'author_id');
     }
     protected $table = 'Vip_referals';
 }

@@ -34,9 +34,14 @@ Route::middleware('api')->prefix('auth')->group(function () {
      */
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', 'Auth\LogoutController@logout');
-        Route::post('refresh', 'AuthController@refresh');
+        //Route::post('refresh', 'AuthController@refresh');
     });
     Route::post('register', 'Auth\RegisterController@register');
+    Route::prefix('restore')->group(function() {
+        Route::post('send', 'Auth\RestoreController@send');
+        Route::post('verify', 'Auth\RestoreController@verify')->middleware(['throttle:6,1']);
+        Route::post('change', 'Auth\RestoreController@change');
+    });
 });
 
 Route::middleware('api')->prefix('email')->group(function () {
@@ -66,6 +71,7 @@ Route::middleware('api')->group(function () {
     Route::prefix('news')->group(function () {
         Route::get('/', 'NewsController@getAll');
         Route::get('/id/{id}', 'NewsController@getByID')->whereUuid('id');
+        Route::get('/like/{id}', 'NewsController@like')->whereUuid('id')->middleware(['auth:sanctum', 'verified']);
     });
     Route::prefix('changelogs')->group(function () {
         Route::get('/', 'ChangeLogs\ItemsController@getAll');
@@ -77,9 +83,10 @@ Route::middleware('api')->group(function () {
             Route::post('/', 'WalletsController@addMe');
             Route::post('/player/{id}', 'WalletsController@addAnother')->whereUuid('id');
         });
-        Route::post('/', 'WalletsController@me')->middleware(['auth:sanctum', 'verified']);
-        Route::post('/me', 'WalletsController@me')->middleware(['auth:sanctum', 'verified']);
-        Route::get('/wid/{wid}', 'WalletsController@getByWID')->whereUuid('id');
+        Route::post('/exchange', 'WalletsController@exchange')->middleware(['auth:sanctum', 'verified']);
+        Route::get('/', 'WalletsController@me')->middleware(['auth:sanctum', 'verified']);
+        Route::get('/me', 'WalletsController@me')->middleware(['auth:sanctum', 'verified']);
+        Route::get('/history', 'WalletsController@history')->middleware(['auth:sanctum', 'verified']);
     });
     Route::prefix('roles')->group(function () {
         Route::get('/', 'RolesController@getAll');

@@ -79,7 +79,7 @@ class UserController extends Controller
             ]);
          }
          $user = Auth::user();
-         if(!Hash::check($data["password"], User::where('name', $user->name)->first()->password)){
+         if(!Hash::check($data["password"], User\Instance::where('name', $user->name)->first()->password)){
             return \Response::json([
                 'response' => 400,
                 'error' => Lang::get('auth.errors.password'),
@@ -135,7 +135,7 @@ class UserController extends Controller
             ]);
          }
          $user = Auth::user();
-         if(!Hash::check($data["password"], User::where('name', $user->name)->first()->password)){
+         if(!Hash::check($data["password"], User\Instance::where('name', $user->name)->first()->password)){
             return \Response::json([
                 'response' => 400,
                 'error' => Lang::get('auth.errors.password'),
@@ -164,21 +164,21 @@ class UserController extends Controller
     }
 
     public function getByUUID($uuid){
-        if(User::getByUUID($uuid) == NULL){
+        if(User\Instance::getByUUID($uuid) == NULL){
             return response()->json(["response" => 404, "error" => Lang::get('api.users.notfound')], 404);
         }
-        return response()->json(['response' => 200, 'data' => User::getByUUID($uuid), 'time' => date('H:i', time()) ]);
+        return response()->json(['response' => 200, 'data' => User\Instance::getByUUID($uuid), 'time' => date('H:i', time()) ]);
     }
     public function getByID($id){
-        if(User::getByID($id) == NULL){
+        if(User\Instance::getByID($id) == NULL){
             return response()->json(["response" => 404, "error" => Lang::get('api.users.notfound')], 404);
         }
-        return response()->json(['response' => 200, 'data' => User::getByID($id), 'time' => date('H:i', time()) ]);
+        return response()->json(['response' => 200, 'data' => User\Instance::getByID($id), 'time' => date('H:i', time()) ]);
     }
     public function getByLogin($login){
-        if(User::getByLogin($login) == NULL){
+        if(User\Instance::getByLogin($login) == NULL){
             return response()->json(["response" => 404, "error" => Lang::get('api.users.notfound')], 404);
         }
-        return response()->json(['response' => 200, 'data' => User::getByLogin($login), 'time' => date('H:i', time())]);
+        return response()->json(['response' => 200, 'data' => User\Instance::getByLogin($login), 'time' => date('H:i', time())]);
     }
 }

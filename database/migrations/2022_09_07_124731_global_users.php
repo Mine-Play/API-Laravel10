@@ -32,6 +32,7 @@ return new class extends Migration
             $table->integer('exp')->default(0);
             $table->string('totp')->nullable();
             $table->string('referal')->nullable();
+            $table->json('likes')->nullable();
             $table->json('params')->nullable();
         });
     }

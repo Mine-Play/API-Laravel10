@@ -37,10 +37,10 @@ class LoginController extends Controller
     public function login()
     {
         $credentials = request(['name', 'password']);
-        $user = User::where('name', $credentials["name"])->first();
+        $user = User\Instance::where('name', $credentials["name"])->first();
         //return var_dump($user->tokens()->get()->pluck('token'));
         if (!$user) {
-            $user = User::where('email', $credentials["name"])->first();
+            $user = User\Instance::where('email', $credentials["name"])->first();
             if(!$user){
                 return response()->json([
                     'response' => 401,
@@ -88,11 +88,6 @@ class LoginController extends Controller
             ];
         }
         return $this->respondWithToken($user->createToken("access_token")->plainTextToken, $user, $email);
-    }
-
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
     }
     protected function respondWithToken($token, $user, $email = true)
     {

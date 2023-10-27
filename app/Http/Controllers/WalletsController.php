@@ -67,4 +67,31 @@ class WalletsController extends Controller
         }
         
     }
+    public function exchange(Request $request){
+        $validator = Validator::make($request->all(), [
+            'amount' => ['required', 'integer', "min:1"],
+            'vault' => ['required', 'string']
+        ], [
+            'amount.min' => Lang::get('api.wallet.minsum'),
+            'required' => __('register')["errors"]['required']
+        ]);
+        if ($validator->fails()){
+            $errors = $validator->errors();
+            return response()->json(['response' => 4001, 'error' => $errors->all(':message')[0], 'time' => date('H:i', time()) ]);
+        }
+        $user = Auth::user();
+        if($user->Wallet->money < $request->all()["amount"]){
+            return response()->json(['response' => 4003, 'error' => "У вас недостаточно монет для обмена.", 'time' => date('H:i', time()) ]);
+        }
+        if($request->all()["vault"] == "keys" || $request->all()["vault"] == "coins"){
+            $wallet = $user->Wallet->exchange($request->all()["vault"], $request->all()["amount"]);
+            return response()->json(['response' => 200, 'data' => $wallet, 'time' => date('H:i', time()) ]);
+        }
+        return response()->json(['response' => 4002, 'error' => "Некорректная валюта", 'time' => date('H:i', time()) ]);
+    }
+
+    public function history(){
+        $user = Auth::user();
+        return response()->json(['response' => 200, 'data' => $user->Wallet->History, 'time' => date('H:i', time()) ]);
+    }
 }

@@ -24,6 +24,6 @@ class Violation extends Model
     public $timestamps = false;
     public function User()
     {
-        return $this->belongsTo(User::class, 'user');
+        return $this->belongsTo(User\Instance::class, 'user');
     }
 }

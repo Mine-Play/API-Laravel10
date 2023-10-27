@@ -140,7 +140,7 @@ class RegisterController extends Controller
     {
         $data = $request->all();
         if(!$referal = VipReferal::where('referal', $data["referal"])->select('id')->first()){
-            $user = User::create([
+            $user = User\Instance::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
@@ -158,7 +158,7 @@ class RegisterController extends Controller
             Mail::to($data['email'])->send(new VerifyEmail($pin));
             return $user;
         }
-        $user = User::create([
+        $user = User\Instance::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),

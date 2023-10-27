@@ -21,7 +21,7 @@ class SkinsController extends Controller
      */
     public function name($name)
     {      
-        return response()->json(['response' => 200, 'data' => User::where('name', $name)->select('skin', 'id')->first()->skin(), 'time' => date('H:i', time()) ]);
+        return response()->json(['response' => 200, 'data' => User\Instance::where('name', $name)->select('skin', 'id')->first()->skin(), 'time' => date('H:i', time()) ]);
     }
     public function choose(Request $request){
         $validator = Validator::make($request->all(), [

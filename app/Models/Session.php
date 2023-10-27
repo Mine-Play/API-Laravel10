@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\User;
+
 class Session extends Model
 {
     use HasUuids;
@@ -28,9 +30,13 @@ class Session extends Model
     {
         return $this->hasOne(Sanctum\PersonalAccessToken::class, 'token_id', 'tokenable_id');
     }
+    public function User()
+    {
+        return $this->belongsTo(User\Instance::class, 'user_id', 'id');
+    }
 
     public function kill(){
-        auth()->user()->tokens()->delete();
+        $this->User->tokens()->delete();
         $this->delete();
     }
     public $timestamps = false;

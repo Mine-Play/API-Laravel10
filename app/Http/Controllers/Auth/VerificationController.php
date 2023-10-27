@@ -55,7 +55,7 @@ class VerificationController extends Controller
             ->where('pin', $request->pin)
             ->delete();
     
-        $user = User::find(Auth::user()->id);
+        $user = User\Instance::find(Auth::user()->id);
         $user->email_verified_at = Carbon::now()->toDateTimeString();
         $user->save();
     

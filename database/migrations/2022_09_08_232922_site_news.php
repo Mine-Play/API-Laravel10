@@ -19,12 +19,14 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle');
             $table->text('content');
-            $table->integer('author');
+            $table->uuid('author');
             $table->integer('time');
             $table->integer('views')->default(0);
             $table->integer('likes')->default(0);
-            $table->integer('dislikes')->default(0);
             $table->timestamp('date')->useCurrent();
+            $table->json("vote")->nullable();
+            $table->json("anchors")->nullable();
+            $table->uuid("category");
         });
     }
 

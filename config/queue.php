@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    'default' => "database",
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     'connections' => [
 
         'sync' => [
-            'driver' => 'redis',
+            'driver' => 'database',
         ],
 
         'database' => [
@@ -85,7 +85,7 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => env('DB_CONNECTION', 'Global'),
         'table' => 'job_batches',
     ],
 
@@ -102,7 +102,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => env('DB_CONNECTION', 'Global'),
         'table' => 'failed_jobs',
     ],
 

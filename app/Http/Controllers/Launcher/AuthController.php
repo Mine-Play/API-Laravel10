@@ -43,7 +43,7 @@ class AuthController extends Controller
     }
     public function checkServer() {
         $data = request(['username', 'serverId']);
-        $user = User::where("name", $data["username"])->select("id")->first();
+        $user = User\Instance::where("name", $data["username"])->select("id")->first();
         $serverId = Session::where([["user_id", "=", $user->id], ["place", "=", "Launcher"]])->select("attributes")->first()->attributes;
         if(json_decode($serverId)->serverId != $data["serverId"]){
             return response()->json([
@@ -69,9 +69,9 @@ class AuthController extends Controller
     {
         $credentials = request(['login', 'context', 'password', 'minecraftAccess']);
         $this->credentials = $credentials;
-        $user = User::where('name', $credentials["login"])->first();
+        $user = User\Instance::where('name', $credentials["login"])->first();
         if (!$user) {
-            $user = User::where('email', $credentials["login"])->first();
+            $user = User\Instance::where('email', $credentials["login"])->first();
             if(!$user){
                 return response()->json([
                     'error' => 'auth.wrongpassword',
@@ -85,7 +85,7 @@ class AuthController extends Controller
                 'time' => date('H:i', time()) 
             ], 500);
         }
-        Session::where([['user_id', "=", User::where('name', $credentials["login"])->first()->id], ["place", "=", "Launcher"]])->select('id')->delete();
+        Session::where([['user_id', "=", User\Instance::where('name', $credentials["login"])->first()->id], ["place", "=", "Launcher"]])->select('id')->delete();
         $token = $user->createToken("access_token")->plainTextToken;
         if(!$credentials["minecraftAccess"]){
             return response()->json([
@@ -108,7 +108,7 @@ class AuthController extends Controller
     private function HttpUserSession($login, $token) {
         if(!$session = Session::where('token_id', explode('|', $token)[0])->select('id')->first()){
             $session = Session::create([
-                "user_id" => User::where("name", $login)->select("id")->first()->id,
+                "user_id" => User\Instance::where("name", $login)->select("id")->first()->id,
                 "token_id" => explode("|", $token)[0],
                 "place" => 'Launcher',
                 'device' => 'Desktop',
@@ -122,9 +122,9 @@ class AuthController extends Controller
         ];
     }
     private function HttpUser($login, $token){
-        $user = User::where('name', $login)->first();
+        $user = User\Instance::where('name', $login)->first();
         if (!$user) {
-            $user = User::where('email', $login)->first();
+            $user = User\Instance::where('email', $login)->first();
         }
         $role = Role::getByID($user->role);
         $skin = $user->skin();

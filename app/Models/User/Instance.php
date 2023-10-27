@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\User;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -18,51 +18,64 @@ use App\Events\Users\UserRegistered;
 
 use App\Models\Violation;
 use App\Models\Role;
+use App\Models\New;
+use App\Models\Wallet;
+use App\Models\Session;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 
-class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable
+class Instance extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable
 
 {
     use HasApiTokens, Notifiable, HasUuids, TwoFactorAuthentication;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $attributes = [
-        'last_login' => null,
-        'referal' => null,
-        'skin' => 0,
-        'cloak' => 0,
-        'avatar' => 0,
-        'banner' => 0,
-        'level' => 1,
-        'exp' => 0,
-    ];
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'level',
-        'exp'
-    ];
-    protected $hidden = [
-        'password', 'params', 'password_reset', 'avatar', 'totp', 'referal', 'created_at'
-    ];
-    protected $casts = [
-        'email_verified_at' => 'datetime:Y-m-d H:m:s',
-        'params' => 'array'
-    ];
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+
+    protected $attributes = ['last_login' => null, 'referal' => null, 'skin' => 0, 'cloak' => 0, 'avatar' => 0, 'banner' => 0, 'level' => 1, 'exp' => 0, 'likes' => null];
+
+    protected $fillable = ['name', 'email', 'password', 'role', 'level', 'exp'];
+
+    protected $hidden = ['password', 'params', 'password_reset', 'avatar', 'totp', 'referal', 'created_at'];
+
+    protected $casts = ['email_verified_at' => 'datetime:Y-m-d H:m:s', 'params' => 'array', 'likes' => 'array'];
+
     public $timestamps = false;
+
+    /*
+        Custom Events Manager
+    */
+    protected $dispatchesEvents = [
+        'created' => UserRegistered::class
+    ];
+
+    /*
+        User Relationships
+    */
+    public function Violations(){
+        return $this->hasMany(Violation::class, 'user');
+    }
+
+    public function News(){
+        return $this->hasMany(New\Item::class, 'author');
+    }
+
+    public function Wallet(){
+        return $this->hasOne(Wallet\Instance::class, 'id', 'id');
+    }
+
+    public function Sessions(){
+        return $this->hasMany(Session::class, 'user_id', 'id');
+    }
+    
+    /**
+     * User model methods
+     */
+    public static function getByLogin($login){
+        return User\Instance::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
+    }
+    public static function getByID($id){
+        return User\Instance::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
+    }
     public function ban($moderator, $ending_at, $rules, $message = null){
         $violation = Violation::create([
             "user" => $this->id,
@@ -76,6 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     }
 
     public function changePassword($newpass){
+        $this->password_reset = Carbon::now()->toDateTimeString();
         $this->password = Hash::make($newpass);
         $this->save();
     }
@@ -113,13 +127,6 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     }
     public function addCoins($val, $history = true) {
         return $this->Wallet->add("coin", $val, $history);
-    }
-
-    public function excahngeKeys($val) {
-        $this->Wallet->exchange("keys", $val);
-    }
-    public function excahngeCoins($val) {
-        $this->Wallet->exchange("coins", $val);
     }
     public function unban($moderator, $reason) {
         $this->Violations->where("type", "ban")->first()->delete();
@@ -195,34 +202,6 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
             "path" => $path,
             "type" => $type
         ];
-    }
-    protected $dispatchesEvents = [
-        'created' => UserRegistered::class
-    ];
-
-    public function Violations()
-    {
-        return $this->hasMany(Violation::class, 'user');
-    }
-
-    public function Wallet()
-    {
-        return $this->hasOne(Wallet\Instance::class, 'id', 'id');
-    }
-
-    public function Sessions()
-    {
-        return $this->hasMany(Session::class, 'user_id', 'id');
-    }
-    
-    /**
-     * User model methods
-     */
-    public static function getByLogin($login){
-        return User::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
-    }
-    public static function getByID($id){
-        return User::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
     }
     protected $table = 'Users';
 }

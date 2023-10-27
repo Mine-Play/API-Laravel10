@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerifyEmail extends Mailable implements ShouldQueue
+class RestorePassword extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     public $pin;
@@ -19,13 +19,14 @@ class VerifyEmail extends Mailable implements ShouldQueue
     public function __construct($pin)
     {
         $this->pin=$pin;
+        $this->afterCommit();
     }
 
     public function build()
     {
     return $this
-        ->subject("Подтверждение почты")
-        ->markdown('emails.verify');
+        ->subject("Смена пароля")
+        ->markdown('emails.restore');
     }
 
     /**
@@ -34,7 +35,7 @@ class VerifyEmail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Подтверждение почты',
+            subject: 'Смена пароля',
         );
     }
 
@@ -44,7 +45,7 @@ class VerifyEmail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.verify',
+            markdown: 'emails.restore',
         );
     }
 

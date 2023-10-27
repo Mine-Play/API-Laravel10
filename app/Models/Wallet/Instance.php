@@ -53,9 +53,37 @@ class Instance extends Model
             return $hist->id;
         }
     }
+    public function exchange($wallet, $val, $history = true){
+        switch ($wallet) {
+            case "keys":
+                $this->keys += $val;
+                break;
+            case "coins":
+                $this->coins += ($val * 100);
+                $this->money -= $val;
+                 break;
+        }
+        $this->save();
+        if($history){
+            $hist = History::create([
+                "wid" => $this->User->id,
+                "type" => "exchange",
+                "bill" => $wallet,
+                "amount" => $val
+            ]);
+            return [
+                "history_id" => $hist->id,
+                "wallet" => [
+                    "money" => $this->money,
+                    "coins" => $this->coins,
+                    "keys" => $this->keys
+                ]
+            ];
+        }
+    }
     public function User()
     {
-        return $this->belongsTo(User::class, 'id', 'id');
+        return $this->belongsTo(User\Instance::class, 'id', 'id');
     }
     public function History() {
         return $this->hasMany(History::class, 'wid', 'id');
