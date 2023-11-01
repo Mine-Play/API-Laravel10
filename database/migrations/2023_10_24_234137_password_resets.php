@@ -13,7 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Password_resets', function (Blueprint $table) {
-            $table->string('email')->index();
+            $table->uuid('id')->unique();
+            $table->string('email')->primary();
             $table->integer('pin');
             $table->timestamp('created_at')->useCurrent();
         });

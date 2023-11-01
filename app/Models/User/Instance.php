@@ -35,7 +35,7 @@ class Instance extends Authenticatable implements MustVerifyEmail, TwoFactorAuth
 
     protected $fillable = ['name', 'email', 'password', 'role', 'level', 'exp'];
 
-    protected $hidden = ['password', 'params', 'password_reset', 'avatar', 'totp', 'referal', 'created_at'];
+    protected $hidden = ['password', 'params', 'password_reset', 'avatar', 'totp', 'referal', 'created_at', 'email_verified_at', 'email'];
 
     protected $casts = ['email_verified_at' => 'datetime:Y-m-d H:m:s', 'params' => 'array', 'likes' => 'array'];
 
@@ -67,15 +67,7 @@ class Instance extends Authenticatable implements MustVerifyEmail, TwoFactorAuth
         return $this->hasMany(Session::class, 'user_id', 'id');
     }
     
-    /**
-     * User model methods
-     */
-    public static function getByLogin($login){
-        return User\Instance::where('name', $login)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
-    }
-    public static function getByID($id){
-        return User\Instance::where('id', $id)->select('id', 'name', 'created_at', 'last_login', 'role')->first();
-    }
+
     public function ban($moderator, $ending_at, $rules, $message = null){
         $violation = Violation::create([
             "user" => $this->id,

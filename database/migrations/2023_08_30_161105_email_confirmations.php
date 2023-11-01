@@ -13,7 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Email_confirmations', function (Blueprint $table) {
-            $table->string('email')->index();
+            $table->uuid('id')->unique();
+            $table->string('email');
             $table->integer('pin');
             $table->timestamp('created_at')->useCurrent();
         });

@@ -169,6 +169,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\EnumsServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
     ])->toArray(),

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
 use App\Helpers\Lang;
+use App\Helpers\Response;
 
 class LogoutController extends Controller
 {
@@ -22,10 +24,6 @@ class LogoutController extends Controller
         
         $request->user()->currentAccessToken()->delete();
         
-        return response()->json([
-            'respone' => 200,
-            'message' => Lang::get('logout.message'),
-            'time' => date('H:i', time()) 
-        ]);
+        return Response::success();
     }
 }

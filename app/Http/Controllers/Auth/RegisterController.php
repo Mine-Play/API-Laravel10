@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -12,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Str;
 
 use Stevebauman\Location\Facades\Location;
 
@@ -21,12 +19,14 @@ use Illuminate\Http\Request;
 use App\Mail\VerifyEmail;
 
 use App\Helpers\Lang;
+use App\Helpers\Response;
 
+use App\Enums\Errors;
 
 use App\Models\User;
 use App\Models\Role;
-use App\Models\VipReferal;
 use App\Models\Session;
+use App\Models\Pin\Email as PIN;
 
 class RegisterController extends Controller
 {
@@ -59,43 +59,17 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     public function register(Request $request){
-         /**
-          * Checking data with Laravel Validator
-          * Translate
-          */
         if ($this->validator($request->all())->fails()){
             $errors = $this->validator($request->all())->errors();
- 
-            return \Response::json([
-                'response' => 400,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
-         }
-         /**
-          * Password custom validation
-          */
-         if (preg_match('/\p{Cyrillic}/u', $request->get('password'))){
-            return \Response::json([
-                'response' => 400,
-                'message' => Lang::get("register.errors.password.regexp"),
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
-         /**
-          * Register user
-          */
+        if (preg_match('/\p{Cyrillic}/u', $request->get('password'))){
+            return Response::error(ERRORS::CLIENT_VALIDATION, Lang::get("register.errors.password.regexp"));
+        }
+
+
         $user = $this->create($request);
-         /**
-          * Generate token
-          */
         $token = $user->createToken('access_token')->plainTextToken;
         return $this->respondWithToken($token, $user);
     }
@@ -138,42 +112,14 @@ class RegisterController extends Controller
      */
     protected function create(Request $request)
     {
-        $data = $request->all();
-        if(!$referal = VipReferal::where('referal', $data["referal"])->select('id')->first()){
-            $user = User\Instance::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'role' => Role::default()->id,
-                'referal' => null
-            ]);
-            $pin = rand(10000, 99999);
-            DB::connection('Site')->table('Email_confirmations')
-            ->insert(
-                [
-                    'email' => $request->all()['email'], 
-                    'pin' => $pin
-                ]
-            );
-            Mail::to($data['email'])->send(new VerifyEmail($pin));
-            return $user;
-        }
         $user = User\Instance::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
             'role' => Role::default()->id,
-            'referal' => $referal->id
+            'referal' => null
         ]);
-        $pin = rand(10000, 99999);
-        DB::connection('Site')->table('Email_confirmations')
-        ->insert(
-            [
-                'email' => $request->all()['email'], 
-                'pin' => $pin
-            ]
-        );
-        Mail::to($data['email'])->send(new VerifyEmail($pin));
+        PIN::generate($request->email, VerifyEmail::class);
         return $user;
     }
     protected function respondWithToken($token, $user)

@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Redis;
 use App\Models\Wallet;
 use App\Models\Role;
 use App\Models\User;
+
+use App\Mail\VerifyEmail;
  
 class UserController extends Controller
 {
@@ -79,7 +81,7 @@ class UserController extends Controller
             ]);
          }
          $user = Auth::user();
-         if(!Hash::check($data["password"], User\Instance::where('name', $user->name)->first()->password)){
+         if(!Hash::check($data["password"], $user->password)){
             return \Response::json([
                 'response' => 400,
                 'error' => Lang::get('auth.errors.password'),
@@ -99,7 +101,7 @@ class UserController extends Controller
          ]));
          return \Response::json([
             'response' => 200,
-            'error' => Lang::get('api.users.successpass'),
+            'message' => Lang::get('api.users.successpass'),
             'time' => date('H:i', time()) 
         ]);
     }
@@ -135,17 +137,78 @@ class UserController extends Controller
             ]);
          }
          $user = Auth::user();
-         if(!Hash::check($data["password"], User\Instance::where('name', $user->name)->first()->password)){
+         if(!Hash::check($data["password"], $user->password)){
             return \Response::json([
                 'response' => 400,
                 'error' => Lang::get('auth.errors.password'),
                 'time' => date('H:i', time()) 
             ]);
          }
-         $user->changeEmail($data["new_email"]);
+         $pin = rand(10000, 99999);
+         DB::connection('Site')->table('Email_confirmations')
+         ->insert(
+             [
+                 'email' => $request->new_email, 
+                 'pin' => $pin
+             ]
+         );
+         Mail::to($data['email'])->send(new VerifyEmail($pin));
+        //  $user->changeEmail($data["new_email"]);
          return \Response::json([
             'response' => 200,
-            'error' => Lang::get('api.users.successemail'),
+            'time' => date('H:i', time()) 
+        ]);
+    }
+    public function changeEmailVerify(Request $request){
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'password' => ['required', 'string', 'min:8', 'max:40'],
+            'new_email' => ['required', 'string', 'email', 'max:50', 'unique:Users'],
+        ], [
+            /**
+             * Password
+             */
+            'password.min' => Lang::get("register.errors.password.min"),
+            'password.max' => Lang::get("register.errors.password.max"),
+            /**
+             * Email
+             */
+            'email.unique' => Lang::get("register.errors.email.unique"),
+            'email.max' => Lang::get("register.errors.email.max"),
+            /**
+             * Other
+             */
+            'required' => __('register')["errors"]['required']
+        ]);
+        if ($validator->fails()){
+            $errors = $validator->errors();
+ 
+            return \Response::json([
+                'response' => 400,
+                'error' => $errors->all(':message')[0],
+                'time' => date('H:i', time()) 
+            ]);
+         }
+         $user = Auth::user();
+         if(!Hash::check($data["password"], $user->password)){
+            return \Response::json([
+                'response' => 400,
+                'error' => Lang::get('auth.errors.password'),
+                'time' => date('H:i', time()) 
+            ]);
+         }
+         $pin = rand(10000, 99999);
+         DB::connection('Site')->table('Email_confirmations')
+         ->insert(
+             [
+                 'email' => $request->all()['email'], 
+                 'pin' => $pin
+             ]
+         );
+         Mail::to($data['email'])->send(new VerifyEmail($pin));
+        //  $user->changeEmail($data["new_email"]);
+         return \Response::json([
+            'response' => 200,
             'time' => date('H:i', time()) 
         ]);
     }

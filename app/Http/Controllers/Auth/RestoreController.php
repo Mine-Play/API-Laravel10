@@ -12,6 +12,12 @@ use App\Mail\RestorePassword;
 use Carbon\Carbon;
 
 use App\Models\User;
+use App\Models\Pin\Password as PIN;
+
+use App\Helpers\Response;
+
+use App\Enums\Errors;
+
 
 class RestoreController extends Controller
 {
@@ -22,34 +28,14 @@ class RestoreController extends Controller
     
         if ($validator->fails()) {
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4001,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
-        $select = DB::connection('Site')->table('Password_resets')->where('email', $request->email)->whereDate('created_at', '<=', Carbon::now()->toDateTimeString())->first();
-        if($select == null){
-            $pin = random_int(10000, 99999);
-            DB::connection('Site')->table('Password_resets')
-            ->insert(
-                [
-                    'email' => $request->all()['email'], 
-                    'pin' => $pin
-                ]
-            );
-            Mail::to($request->all()['email'])->send(new RestorePassword($pin));   
-            return \Response::json([
-                'response' => 200,
-                'type' => 'new',
-                'time' => date('H:i', time()) 
-            ]);
+        $select = PIN::select('created_at')->where('email', $user->email)->first();
+        if($select == NULL){
+            PIN::Generate($user->email, VerifyEmail::class);
+            return Response::data(["code" => "new"]);
         }else{
-            return \Response::json([
-                'response' => 200,
-                'type' => 'old',
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::data(["code" => "old"]);  
         }
     }
     public function verify(Request $request){
@@ -60,24 +46,9 @@ class RestoreController extends Controller
     
         if ($validator->fails()) {
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4001,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
-        $select = DB::connection('Site')->table('Password_resets')->where('email', $request->email)->where('pin', $request->pin)->whereDate('created_at', '<=', Carbon::now()->toDateTimeString())->first();
-        if($select == null){
-            return \Response::json([
-                'response' => 4002,
-                'error' => "Invalid pin",
-                'time' => date('H:i', time()) 
-            ]);
-        }
-        return \Response::json([
-            'response' => 200,
-            'time' => date('H:i', time()) 
-        ]);
+        return PIN::Check($request->email, $request->pin) ? Response::success() : Response::error(ERRORS::CLIENT_CREDENTIALS);
     }
     public function change(Request $request){
         $validator = Validator::make($request->all(), [
@@ -88,29 +59,18 @@ class RestoreController extends Controller
     
         if ($validator->fails()) {
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4001,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
-        $select = DB::connection('Site')->table('Password_resets')->where('email', $request->email)->where('pin', $request->pin)->whereDate('created_at', '<=', Carbon::now()->toDateTimeString())->first();
-        if($select == null){
-            return \Response::json([
-                'response' => 4002,
-                'error' => "Invalid pin",
-                'time' => date('H:i', time()) 
-            ]);
+
+        if(PIN::Check($request->email, $request->pin)){
+            return Response::error(ERRORS::CLIENT_CREDENTIALS);
         }
         $user = User\Instance::where('email', $request->email)->first();
         $user->changePassword($request->password);
         foreach ($user->Sessions as $session){
             $session->kill();
         }
-        DB::connection('Site')->table('Password_resets')->where('email', $request->email)->where('pin', $request->pin)->delete();
-        return \Response::json([
-            'response' => 200,
-            'time' => date('H:i', time()) 
-        ]);
+        PIN::Erase($request->email, $request->pin);
+        return Response::success();
     }
 }

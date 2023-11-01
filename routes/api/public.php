@@ -53,12 +53,16 @@ Route::middleware('api')->group(function () {
     Route::prefix('users')->group(function () {
         Route::middleware(['auth:sanctum', 'verified'])->post('/me', 'UserController@me');
         Route::middleware(['auth:sanctum', 'verified'])->post('/', 'UserController@me');
-        Route::get('/id/{id}', 'UserController@getByID')->whereUuid('id');
-        Route::get('/login/{login}', 'UserController@getByLogin');
+        Route::get('/{alias}/{uuid}', 'User\MainController@getByID')->whereUuid('uuid')->where('alias', 'id|uuid');
+        Route::get('/{alias}/{name}', 'User\MainController@getByName')->where('alias', 'login|name');
         Route::prefix('personal')->middleware(['auth:sanctum', 'verified'])->group(function () {
-            Route::post('/changepass', 'UserController@changePassword');
-            Route::get('/sessions', 'UserController@sessions');
-            Route::get('/sessions/end', 'UserController@endSession');
+            Route::prefix('change')->group(function () {
+                Route::post('/password', 'User\ChangeController@Password');
+                Route::post('/email', 'User\ChangeController@Email');
+                Route::post('/email/confirm', 'User\VerificationController@Email');
+            });
+            Route::get('/sessions', 'User\SessionController@sessions');
+            Route::get('/sessions/end', 'User\SessionController@endSession');
             Route::prefix('totp')->group(function () {
                 Route::get('/info', 'UserController@TotpInfo');
                 Route::post('/add', 'UserController@TotpAdd');

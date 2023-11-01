@@ -8,10 +8,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 use App\Helpers\Lang;
+use App\Helpers\Response;
+
+use App\Enums\Errors;
 
 use App\Mail\VerifyEmail;
 use App\Models\User;
+use App\Models\Pin\Email as PIN;
 use Carbon\Carbon;
 
 class VerificationController extends Controller
@@ -32,38 +37,20 @@ class VerificationController extends Controller
     
         if ($validator->fails()) {
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4001,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
-        $select = DB::connection('Site')->table('Email_confirmations')
-            ->where('email', Auth::user()->email)
-            ->where('pin', $request->pin)
-            ->whereDate('created_at', '<=', Carbon::now()->toDateTimeString());
-        if ($select->get()->isEmpty()) {
-            return \Response::json([
-                'response' => 4001,
-                'error' => Lang::get("api.email.verify.notvalid"),
-                'time' => date('H:i', time()) 
-            ]);
+
+        $user = Auth::user();
+
+        if (PIN::Check($user->email, $request->pin) == NULL) {
+            return Response::error(ERRORS::CLIENT_CREDENTIALS);
         }
     
-        $select = DB::connection('Site')->table('Email_confirmations')
-            ->where('email', Auth::user()->email)
-            ->where('pin', $request->pin)
-            ->delete();
-    
-        $user = User\Instance::find(Auth::user()->id);
+        PIN::Erase($user->email, $request->pin);
         $user->email_verified_at = Carbon::now()->toDateTimeString();
         $user->save();
     
-        return \Response::json([
-            'response' => 200,
-            'message' => Lang::get("api.email.verify.success"),
-            'time' => date('H:i', time()) 
-        ]);
+        return Response::success();
     }
     
     public function resend(Request $request) {
@@ -73,37 +60,16 @@ class VerificationController extends Controller
     
         if ($validator->fails()) {
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4001,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
         }
+        $user = Auth::user();
+        if ($user->hasVerifiedEmail()) {
+            return Response::error(4101);
+        }
+        $pin = PIN::Check($user->email) ? $pin->delete() : '';
+
+        PIN::Generate($request->email, VerifyEmail::class);
     
-        if (auth()->user()->hasVerifiedEmail()) {
-            return \Response::json([
-                'response' => 4002,
-                'error' => Lang::get("api.email.verify.already"),
-                'time' => date('H:i', time()) 
-            ]);
-        }
-        $select = DB::connection('Site')->table('Email_confirmations')->where('email', Auth::user()->email)->first();
-        if($select != NULL){
-            DB::connection('Site')->table('Email_confirmations')->where('email', Auth::user()->email)->delete();
-        }
-        $pin = random_int(10000, 99999);
-        $password_reset = DB::connection('Site')->table('Email_confirmations')->insert([
-            'email' => $request->all()['email'],
-            'pin' =>  $pin
-        ]);
-    
-        if ($password_reset) {
-            Mail::to($request->all()['email'])->send(new VerifyEmail($pin));
-            return \Response::json([
-                'response' => 200,
-                'message' => Lang::get("api.email.verify.resend"),
-                'time' => date('H:i', time()) 
-            ]);    
-        }
+        return Response::success();
     }
 }
