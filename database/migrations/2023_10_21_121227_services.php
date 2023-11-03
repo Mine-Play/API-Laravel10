@@ -12,12 +12,11 @@ return new class extends Migration
     protected $connection = 'Site';
     public function up(): void
     {
-        Schema::create('Items', function (Blueprint $table) {
+        Schema::create('Services', function (Blueprint $table) {
             $table->uuid('id')->nullable()->index();
             $table->string('title');
             $table->text('description');
-            $table->string('legend');
-            $table->uuid('category');
+            $table->uuid('cost');
         });
     }
 

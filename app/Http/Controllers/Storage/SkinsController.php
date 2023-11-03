@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Storage;
 
 use App\Helpers\Lang;
+use App\Helpers\Response;
+
+use App\Enums\Errors;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -20,8 +23,8 @@ class SkinsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function name($name)
-    {      
-        return response()->json(['response' => 200, 'data' => User\Instance::where('name', $name)->select('skin', 'id')->first()->skin(), 'time' => date('H:i', time()) ]);
+    {   
+        return Response::data(User\Instance::where('name', $name)->select('skin', 'id')->first()->skin());
     }
     public function choose(Request $request){
         $validator = Validator::make($request->all(), [
@@ -31,11 +34,7 @@ class SkinsController extends Controller
         ]);
         if ($validator->fails()){
             $errors = $validator->errors();
-            return \Response::json([
-                'response' => 4002,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
          }
         switch($request->skin){
             case "steve":
@@ -60,22 +59,11 @@ class SkinsController extends Controller
                 $type = "default";
                 break;
         }
-        return \Response::json([
-            'response' => 200,
-            'skin' => [
-                 "path" => $path,
-                 "type" => $type
-            ],
-            'time' => date('H:i', time()) 
-        ]);
+        return Response::data(['skin' => ["path" => $path, "type" => $type]]);
     }
     public function upload(Request $request){
         if(!$request->hasFile('skin')) {
-            return \Response::json([
-                'response' => 4001,
-                'error' => Lang::get('api.storage.skins.notfound'),
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, Lang::get('api.storage.skins.notfound'));
         }
         $file = $request->file('skin'); 
         $validator = Validator::make($request->all(), [
@@ -88,27 +76,14 @@ class SkinsController extends Controller
         ]);
         if ($validator->fails()){
             $errors = $validator->errors();
- 
-            return \Response::json([
-                'response' => 4002,
-                'error' => $errors->all(':message')[0],
-                'time' => date('H:i', time()) 
-            ]);
+            return Response::error(ERRORS::CLIENT_VALIDATION, $errors->all(':message')[0]);
          }
          if($request->type == "default" || $request->type == "slim"){
             $user = Auth::user();
             $request->file('skin')->storeAs('/users/'.$user->id.'/', 'skin.png');
             $user->setSkin($request->type);
-            return \Response::json([
-               'response' => 200,
-               'skin' => $user->skin(),
-               'time' => date('H:i', time()) 
-           ]);
+            return Response::data(['skin' => $user->skin()]);
          }
-         return \Response::json([
-            'response' => 4003,
-            'error' => Lang::get("api.storage.skins.type"),
-            'time' => date('H:i', time()) 
-        ]);
+         return Response::error(ERRORS::CLIENT_VALIDATION, Lang::get("api.storage.skins.type"));
 }
 }
