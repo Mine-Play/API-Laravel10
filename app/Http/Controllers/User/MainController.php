@@ -16,6 +16,8 @@ use App\Models\Role;
 use App\Models\User;
 
 use App\Enums\Errors;
+
+use StdClass;
  
 class MainController extends Controller
 {
@@ -28,22 +30,29 @@ class MainController extends Controller
         $user = Auth::user();
         $wallet = Wallet\Instance::me();
         $role = Role::me();
-        $user->wallet = [
+        $response = new StdClass;
+        $response->id = $user->id;
+        $response->name = $user->name;
+        $response->last_login = $user->last_login;
+        $response->exp = $user->exp;
+        $response->likes = $user->likes;
+        $response->wallet = [
            "money" => $wallet->money,
            "keys" => $wallet->keys,
            "coins" => $wallet->coins,
         ];
-        $user->role = [
+        $response->role = [
            "id" => $user->role,
            "title" => $role->title,
            "color" => $role->color
         ];
-        $user->skin = $user->skin();
-        $user->cloak = $user->cloak();
-        $user->banner = $user->banner();
-        $user->registered_at = $user->daysAfterRegister();
-        $user->password_status = $user->passwordStatus();
-        return Response::data($user);
+        $response->skin = $user->skin();
+        $response->cloak = $user->cloak();
+        $response->avatar = $user->avatar();
+        $response->banner = $user->banner();
+        $response->registered_at = $user->daysAfterRegister();
+        $response->password_status = $user->passwordStatus();
+        return Response::data($response);
     }
     public function getByID($alias, $id){
         $user = User\Instance::select('id', 'name', 'role', 'last_login', 'skin', 'cloak', 'avatar', 'banner', 'level')->find($id);

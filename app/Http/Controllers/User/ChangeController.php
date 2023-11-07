@@ -51,7 +51,7 @@ class ChangeController extends Controller
          if(!Hash::check($request->password, $user->password)){
             return Response::error(ERRORS::CLIENT_CREDENTIALS, Lang::get('auth.errors.password'));
          }
-         $user->changePassword($data["new_password"]);
+         $user->changePassword($request->new_password);
          foreach($user->Sessions as $session){
             $session->kill();
          }

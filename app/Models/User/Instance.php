@@ -22,6 +22,8 @@ use App\Models\New;
 use App\Models\Wallet;
 use App\Models\Session;
 
+use App\Helpers\Avatar;
+
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 
@@ -35,7 +37,7 @@ class Instance extends Authenticatable implements MustVerifyEmail, TwoFactorAuth
 
     protected $fillable = ['name', 'email', 'password', 'role', 'level', 'exp'];
 
-    protected $hidden = ['password', 'params', 'password_reset', 'avatar', 'totp', 'referal', 'created_at', 'email_verified_at', 'email'];
+    protected $hidden = ['password', 'params', 'password_reset', 'totp', 'referal', 'created_at', 'email_verified_at', 'email'];
 
     protected $casts = ['email_verified_at' => 'datetime:Y-m-d H:m:s', 'params' => 'array', 'likes' => 'array'];
 
@@ -179,21 +181,25 @@ class Instance extends Authenticatable implements MustVerifyEmail, TwoFactorAuth
         }
         $this->save();
     }
+    public function setCloak(){
+        $this->cloak = 1;
+        $this->save();
+    }
     public function avatar() {
         switch($this->avatar){
-            case 1:
-                $path = Storage::url('/users/'.$this->id.'/skin.png');
-                $type = "INDEV";
+            case 0:
+                return [
+                    "path" => Avatar::classic($this->skin()["path"]),
+                    "status" => 0
+                ];
                 break;
             default:
-                $path = Storage::url(env('TEXTURES_DEFAULT_SKIN_URL', '/users/default/skin.png'));
-                $type = env('TEXTURES_DEFAULT_SKIN_TYPE', 'default');
+                return [
+                    "path" => Avatar::classic($this->skin()["path"]),
+                    "status" => 0
+                ];
                 break;
         }
-        return [
-            "path" => $path,
-            "type" => $type
-        ];
     }
     protected $table = 'Users';
 }

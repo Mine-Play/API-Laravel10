@@ -51,8 +51,8 @@ Route::middleware('api')->prefix('email')->group(function () {
 
 Route::middleware('api')->group(function () {
     Route::prefix('users')->group(function () {
-        Route::middleware(['auth:sanctum', 'verified'])->post('/me', 'UserController@me');
-        Route::middleware(['auth:sanctum', 'verified'])->post('/', 'UserController@me');
+        Route::middleware(['auth:sanctum', 'verified'])->post('/me', 'User\MainController@me');
+        Route::middleware(['auth:sanctum', 'verified'])->post('/', 'User\MainController@me');
         Route::get('/{alias}/{uuid}', 'User\MainController@getByID')->whereUuid('uuid')->where('alias', 'id|uuid');
         Route::get('/{alias}/{name}', 'User\MainController@getByName')->where('alias', 'login|name');
         Route::prefix('personal')->middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -124,10 +124,12 @@ Route::prefix('storage')->group(function () {
             Route::get('/name/{name}', 'Storage\CloaksController@name');
             Route::get('/uuid/{uuid}', 'Storage\CloaksController@uuid');
             Route::get('/library', 'Storage\CloaksController@library');
+            Route::post('/upload', 'Storage\CloaksController@upload')->middleware(['auth:sanctum', 'verified']);
         });
         Route::prefix('avatars')->group(function () {
-            Route::get('/name/{name}', 'Storage\CloaksController@name');
-            Route::get('/uuid/{uuid}', 'Storage\CloaksController@uuid');
+            Route::get('/me', 'Storage\AvatarsController@me')->middleware(['auth:sanctum', 'verified']);
+            Route::get('/name/{name}', 'Storage\AvatarsController@name');
+            Route::get('/uuid/{uuid}', 'Storage\AvatarsController@uuid')->whereUuid('id');
         });
     });
 });

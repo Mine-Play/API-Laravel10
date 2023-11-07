@@ -40,6 +40,13 @@
                 "size": "There are not enough money on your account to install an HD skin",
                 "bigsize": "The file is too large. The maximum file size is 1024×512px",
                 "type": "Unsupported skin type."
+            },
+            "cloaks": {
+                "notfound": "File not found!",
+                "invalid": "The file must be in .png format!",
+                "size": "There are not enough money on your account to install an HD cloak",
+                "bigsize": "The file is too large. The maximum file size is 1024×512px",
+                "type": "Unsupported skin cloak."
             }
         }
     },

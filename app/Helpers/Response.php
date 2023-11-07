@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 
 class Response {
     public static function data($data, String $msg = NULL): JsonResponse{
-        return $msg ? \Response::json(['response' => 2000, 'data' => $data, 'time' => date('H:i', time())]) : \Response::json(['response' => 2000, 'data' => $data, 'message' => $msg, 'time' => date('H:i', time())]);
+        return $msg ? \Response::json(['response' => 200, 'message' => $msg, 'data' => $data, 'time' => date('H:i', time())]) : \Response::json(['response' => 2000, 'data' => $data, 'time' => date('H:i', time())]);
     }
 
     public static function error($error, String $msg = NULL): JsonResponse{
@@ -16,6 +16,6 @@ class Response {
     }
 
     public static function success(String $msg = NULL): JsonResponse{
-        return \Response::json(['response' => 2000, 'message' => $msg ?? '', 'time' => date('H:i', time())]);
+        return \Response::json(['response' => 200, 'message' => $msg ?? '', 'time' => date('H:i', time())]);
     }
 }

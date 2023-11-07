@@ -40,7 +40,6 @@ class SkinsController extends Controller
             case "steve":
                 $user = Auth::user();
                 $user->setSkin(null, 2, array("skin" => ["type" => "slim", "name" => "steve"]));
-
                 $path = Storage::url('/users/default/skins/steve.png');
                 $type = "default";
                 break;
@@ -59,7 +58,10 @@ class SkinsController extends Controller
                 $type = "default";
                 break;
         }
-        return Response::data(['skin' => ["path" => $path, "type" => $type]]);
+        if($user->avatar == 0){
+            return Response::data(['skin' => $user->skin(), 'avatar' => $user->avatar()]);
+        }
+        return Response::data(['skin' => $user->skin()]);
     }
     public function upload(Request $request){
         if(!$request->hasFile('skin')) {
@@ -82,6 +84,9 @@ class SkinsController extends Controller
             $user = Auth::user();
             $request->file('skin')->storeAs('/users/'.$user->id.'/', 'skin.png');
             $user->setSkin($request->type);
+            if($user->avatar == 0){
+                return Response::data(['skin' => $user->skin(), 'avatar' => $user->avatar()]);
+            }
             return Response::data(['skin' => $user->skin()]);
          }
          return Response::error(ERRORS::CLIENT_VALIDATION, Lang::get("api.storage.skins.type"));

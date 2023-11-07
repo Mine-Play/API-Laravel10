@@ -141,13 +141,12 @@ class RegisterController extends Controller
                 'city' => $location->cityName
             ]
         ]);
-        return response()->json([
-            'response' => 200,
-            'message' => Lang::get("register.messages.successful", ["nickname" => $user->name]),
+
+        return Response::data([
             'access_token' => $token,
-            'session_id' => $session->id,
             'token_type' => 'bearer',
-            'time' => date('H:i', time()) 
-        ]);
+            'session_id' => $session->id,
+            'email' => $email
+        ], Lang::get('login.messages.successful', ["nickname" => $user->name]));
     }
 }
